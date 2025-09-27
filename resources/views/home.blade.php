@@ -5,16 +5,14 @@
 @section('page-description', 'مرحباً بك في هدية - تطبيق العمرة الإلكتروني')
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+<div class="row" >
+    <div class="col-12" >
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3" >
             <div>
                 <h2 class="mb-1">مرحباً بك، {{ auth()->user()->name }}</h2>
                 <p class="text-muted mb-0">مرحباً بك في هدية - تطبيق العمرة الإلكتروني</p>
             </div>
-            <a href="{{ route('dashboard') }}" class="btn btn-primary">
-                <i class="fas fa-tachometer-alt me-2"></i>لوحة التحكم
-            </a>
+            
         </div>
     </div>
 </div>

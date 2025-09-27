@@ -361,11 +361,7 @@
             
             <!-- Navigation Menu -->
             <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-                        <i class="fas fa-tachometer-alt me-2"></i>لوحة التحكم
-                    </a>
-                </li>
+            
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">
                         <i class="fas fa-home me-2"></i>الصفحة الرئيسية
@@ -426,8 +422,8 @@
     <div class="main-content">
         <div class="content-wrapper">
             <!-- Page Header -->
-            <div class="page-header animate-on-scroll">
-                <div class="d-flex justify-content-between align-items-center">
+            <div class="page-header animate-on-scroll" style="min-height: 240px;padding-bottom: 2rem;">
+                <div class="d-flex justify-content-between align-items-center h-100" style="min-height: 240px;padding-bottom: 7rem;">
                     <div>
                         <h2 class="mb-1 gradient-text">@yield('page-title', 'لوحة التحكم')</h2>
                         <p class="text-muted mb-0">@yield('page-description', 'مرحباً بك في لوحة تحكم هدية')</p>
@@ -440,7 +436,7 @@
                             <li><a class="dropdown-item" href="{{ route('profile') }}">
                                 <i class="fas fa-user-edit me-2"></i>الملف الشخصي
                             </a></li>
-                            <li><a class="dropdown-item" href="{{ route('home') }}">
+                            <li><a class="dropdown-item" href="{{ url('/') }}" target="_blank">
                                 <i class="fas fa-home me-2"></i>الصفحة الرئيسية
                             </a></li>
                             <li><hr class="dropdown-divider"></li>

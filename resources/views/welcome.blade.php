@@ -1023,7 +1023,7 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6 mb-5">
-                    <h2 class="section-title text-start animate-on-scroll">من نحن</h2>
+                    <h2 class="section-title text-end animate-on-scroll">من نحن</h2>
                     <p class="lead text-muted mb-4 animate-on-scroll">
                         هدية هو تطبيق العمرة الإلكتروني الأول من نوعه في المملكة العربية السعودية، 
                         يهدف إلى ربط أصحاب الرخص الشرعية مع مزودي الخدمة المؤهلين شرعياً من طلبة العلم 
