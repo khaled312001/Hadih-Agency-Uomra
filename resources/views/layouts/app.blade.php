@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <style>
         * { font-family: 'Cairo', sans-serif; }
         body { background-color: #f8f9fa; }
@@ -166,6 +167,15 @@
         </div>
     </footer>
 
+    <!-- WhatsApp Floating Button -->
+    <a href="#" id="whatsapp-float" class="whatsapp-float" 
+       data-phone="966501234567" 
+       data-message="مرحباً، أريد الاستفسار عن خدماتكم في تطبيق هدية للعمرة">
+        <i class="fab fa-whatsapp"></i>
+        <span class="whatsapp-tooltip">تواصل معنا عبر واتساب</span>
+    </a>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>
