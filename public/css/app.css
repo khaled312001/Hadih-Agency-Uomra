@@ -1,0 +1,11 @@
+/* Custom CSS for Laravel App */
+
+/* Body */
+body {
+    background-color: #f8fafc;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    line-height: 1.6;
+}
+
+/* Custom styles can be added here */
