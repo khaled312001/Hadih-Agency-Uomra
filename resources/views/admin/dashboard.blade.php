@@ -250,11 +250,7 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('js/animations.js') }}"></script>
+@section('scripts')
     <script>
         // Orders by Status Chart
         const ordersStatusCtx = document.getElementById('ordersStatusChart').getContext('2d');

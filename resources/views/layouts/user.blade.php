@@ -423,33 +423,38 @@
     <div class="main-content">
         <div class="content-wrapper">
             <!-- Page Header -->
-            <div class="page-header animate-on-scroll" style="min-height: 240px;padding-bottom: 2rem;">
-                <div class="d-flex justify-content-between align-items-center h-100" style="min-height: 240px;padding-bottom: 7rem;">
+            <div class="page-header animate-on-scroll">
+                <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h2 class="mb-1 gradient-text">@yield('page-title', 'لوحة التحكم')</h2>
                         <p class="text-muted mb-0">@yield('page-description', 'مرحباً بك في لوحة تحكم هدية')</p>
                     </div>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user me-2"></i>{{ auth()->user()->name }}
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="{{ route('profile') }}">
-                                <i class="fas fa-user-edit me-2"></i>الملف الشخصي
-                            </a></li>
-                            <li><a class="dropdown-item" href="{{ url('/') }}" target="_blank">
-                                <i class="fas fa-home me-2"></i>الصفحة الرئيسية
-                            </a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
+                    <div class="d-flex align-items-center gap-2">
+                        @hasSection('page-actions')
+                            @yield('page-actions')
+                        @endif
+                        <div class="dropdown">
+                            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user me-2"></i>{{ auth()->user()->name }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{{ route('profile') }}">
+                                    <i class="fas fa-user-edit me-2"></i>الملف الشخصي
+                                </a></li>
+                                <li><a class="dropdown-item" href="{{ url('/') }}" target="_blank">
+                                    <i class="fas fa-home me-2"></i>الصفحة الرئيسية
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="fas fa-sign-out-alt me-2"></i>تسجيل الخروج
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -499,6 +504,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{{ asset('js/animations.js') }}"></script>
     <script src="{{ asset('js/app.js') }}"></script>
+    @yield('scripts')
     <script>
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
