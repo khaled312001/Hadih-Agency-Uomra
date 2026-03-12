@@ -5,451 +5,250 @@
 @section('page-description', 'تواصل مع فريق العمل أو الإدارة')
 
 @section('content')
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h3 class="mb-1 text-primary">
-                    <i class="fas fa-paper-plane me-2"></i>إرسال رسالة جديدة
-                </h3>
-                <p class="text-muted mb-0">تواصل مع فريق العمل أو الإدارة</p>
-            </div>
-            <a href="{{ route('messages.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-right me-2"></i>العودة للرسائل
-            </a>
-        </div>
-    </div>
-</div>
 
 <div class="row justify-content-center">
     <div class="col-lg-8">
-            <div class="card border-0 shadow-sm">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">
-                        <i class="fas fa-envelope me-2"></i>نموذج الرسالة
-                    </h5>
-                </div>
-                <div class="card-body p-4">
-                    <form method="POST" action="{{ route('messages.store') }}" id="messageForm" enctype="multipart/form-data">
-                        @csrf
-                        
-                        <!-- Recipient Selection -->
-                        <div class="row mb-4">
-                            <div class="col-md-6">
-                                <label for="receiver_id" class="form-label fw-bold">
-                                    <i class="fas fa-user me-2 text-primary"></i>المستقبل
-                                </label>
-                                <select class="form-select @error('receiver_id') is-invalid @enderror" id="receiver_id" name="receiver_id" required>
-                                    <option value="">اختر المستقبل</option>
-                                    @foreach($companyUsers as $user)
-                                        <option value="{{ $user->id }}" {{ old('receiver_id') == $user->id ? 'selected' : '' }}>
-                                            {{ $user->name }} - {{ $user->role === 'admin' ? 'إدارة' : 'موظف' }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('receiver_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <label for="order_id" class="form-label fw-bold">
-                                    <i class="fas fa-shopping-cart me-2 text-primary"></i>الطلب (اختياري)
-                                </label>
-                                <select class="form-select @error('order_id') is-invalid @enderror" id="order_id" name="order_id">
-                                    <option value="">رسالة عامة</option>
-                                    @foreach($orders as $order)
-                                        <option value="{{ $order->id }}" 
-                                                {{ (old('order_id') == $order->id || ($selectedOrder && $selectedOrder->id == $order->id)) ? 'selected' : '' }}>
-                                            {{ $order->order_number }} - {{ $order->beneficiary_name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                @error('order_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
 
-                        <!-- Subject -->
-                        <div class="mb-4">
-                            <label for="subject" class="form-label fw-bold">
-                                <i class="fas fa-tag me-2 text-primary"></i>موضوع الرسالة
-                            </label>
-                            <input type="text" class="form-control @error('subject') is-invalid @enderror" 
-                                   id="subject" name="subject" value="{{ old('subject') }}" 
-                                   placeholder="أدخل موضوع الرسالة (اختياري)">
-                            @error('subject')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- Message Type -->
-                        <div class="mb-4">
-                            <label class="form-label fw-bold">
-                                <i class="fas fa-file-alt me-2 text-primary"></i>نوع الرسالة
-                            </label>
-                            <div class="row">
-                                <div class="col-md-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="type" id="type_text" 
-                                               value="text" {{ old('type', 'text') == 'text' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="type_text">
-                                            <i class="fas fa-font me-1"></i>نص
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="type" id="type_image" 
-                                               value="image" {{ old('type') == 'image' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="type_image">
-                                            <i class="fas fa-image me-1"></i>صورة
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="type" id="type_video" 
-                                               value="video" {{ old('type') == 'video' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="type_video">
-                                            <i class="fas fa-video me-1"></i>فيديو
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="type" id="type_file" 
-                                               value="file" {{ old('type') == 'file' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="type_file">
-                                            <i class="fas fa-file me-1"></i>ملف
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Message Content -->
-                        <div class="mb-4" id="messageContentSection">
-                            <label for="message" class="form-label fw-bold">
-                                <i class="fas fa-comment me-2 text-primary"></i>محتوى الرسالة
-                            </label>
-                            <textarea class="form-control @error('message') is-invalid @enderror" 
-                                      id="message" name="message" rows="6" 
-                                      placeholder="اكتب رسالتك هنا..." required>{{ old('message') }}</textarea>
-                            <div class="form-text">
-                                <span id="charCount">0</span> / 1000 حرف
-                            </div>
-                            @error('message')
-                                <div class="invalid-feedback">{{ $errors->first('message') }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- File Upload Section -->
-                        <div class="mb-4" id="fileUploadSection" style="display: none;">
-                            <label for="attachment" class="form-label fw-bold">
-                                <i class="fas fa-upload me-2 text-primary"></i>رفع الملف
-                            </label>
-                            <input type="file" 
-                                   class="form-control @error('attachment') is-invalid @enderror" 
-                                   id="attachment" 
-                                   name="attachment"
-                                   accept="">
-                            <div class="form-text" id="fileHelpText">
-                                اختر الملف المناسب لنوع الرسالة
-                            </div>
-                            @error('attachment')
-                                <div class="invalid-feedback">{{ $errors->first('attachment') }}</div>
-                            @enderror
-                        </div>
-
-                        <!-- File Preview Section -->
-                        <div class="mb-4" id="filePreviewSection" style="display: none;">
-                            <label class="form-label fw-bold">
-                                <i class="fas fa-eye me-2 text-primary"></i>معاينة الملف
-                            </label>
-                            <div id="filePreview" class="border rounded p-3 bg-light">
-                                <!-- File preview will be shown here -->
-                            </div>
-                        </div>
-
-                        <!-- Email Notification Info -->
-                        <div class="alert alert-info d-flex align-items-center mb-4">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <div>
-                                <strong>تنبيه:</strong> سيتم إرسال نسخة من هذه الرسالة إلى بريدك الإلكتروني وإلى بريد المستقبل.
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="d-flex gap-3 justify-content-end">
-                            <a href="{{ route('messages.index') }}" class="btn btn-outline-secondary btn-lg">
-                                <i class="fas fa-times me-2"></i>إلغاء
-                            </a>
-                            <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
-                                <i class="fas fa-paper-plane me-2"></i>إرسال الرسالة
-                            </button>
-                        </div>
-                    </form>
+        <div class="hd-form-section">
+            <div class="hd-form-section__header">
+                <div class="hd-form-section__header-icon"><i class="fas fa-paper-plane"></i></div>
+                <div>
+                    <div class="hd-form-section__header-title">نموذج الرسالة</div>
+                    <div style="font-size:.75rem;color:rgba(255,255,255,.75);">أرسل رسالتك إلى فريق الدعم</div>
                 </div>
             </div>
+            <div class="hd-form-section__body">
+
+                <form method="POST" action="{{ route('messages.store') }}" id="messageForm" enctype="multipart/form-data">
+                    @csrf
+
+                    {{-- Recipient & Order --}}
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <div class="hd-form-group">
+                                <label class="hd-label hd-label--required"><i class="fas fa-user"></i> المستقبل</label>
+                                <div class="hd-input-wrap">
+                                    <i class="hd-input-icon fas fa-user"></i>
+                                    <select name="receiver_id" id="receiver_id"
+                                            class="hd-input hd-select @error('receiver_id') hd-input--error @enderror" required>
+                                        <option value="">اختر المستقبل</option>
+                                        @foreach($companyUsers as $user)
+                                            <option value="{{ $user->id }}" {{ old('receiver_id') == $user->id ? 'selected' : '' }}>
+                                                {{ $user->name }} — {{ $user->role === 'admin' ? 'إدارة' : 'موظف' }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('receiver_id')<div class="hd-error-msg">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="hd-form-group">
+                                <label class="hd-label"><i class="fas fa-shopping-cart"></i> الطلب (اختياري)</label>
+                                <div class="hd-input-wrap">
+                                    <i class="hd-input-icon fas fa-shopping-cart"></i>
+                                    <select name="order_id" id="order_id"
+                                            class="hd-input hd-select @error('order_id') hd-input--error @enderror">
+                                        <option value="">رسالة عامة</option>
+                                        @foreach($orders as $order)
+                                            <option value="{{ $order->id }}"
+                                                    {{ (old('order_id') == $order->id || ($selectedOrder && $selectedOrder->id == $order->id)) ? 'selected' : '' }}>
+                                                {{ $order->order_number }} — {{ $order->beneficiary_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @error('order_id')<div class="hd-error-msg">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Subject --}}
+                    <div class="hd-form-group">
+                        <label class="hd-label"><i class="fas fa-tag"></i> موضوع الرسالة (اختياري)</label>
+                        <div class="hd-input-wrap">
+                            <i class="hd-input-icon fas fa-tag"></i>
+                            <input type="text" name="subject"
+                                   class="hd-input @error('subject') hd-input--error @enderror"
+                                   value="{{ old('subject') }}" placeholder="أدخل موضوع الرسالة">
+                        </div>
+                        @error('subject')<div class="hd-error-msg">{{ $message }}</div>@enderror
+                    </div>
+
+                    {{-- Message Type --}}
+                    <div class="hd-form-group">
+                        <label class="hd-label"><i class="fas fa-file-alt"></i> نوع الرسالة</label>
+                        <div class="d-flex gap-2 flex-wrap">
+                            @foreach(['text'=>['icon'=>'font','label'=>'نص'],'image'=>['icon'=>'image','label'=>'صورة'],'video'=>['icon'=>'video','label'=>'فيديو'],'file'=>['icon'=>'file','label'=>'ملف']] as $val=>$info)
+                            <label style="cursor:pointer;display:flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:10px;border:2px solid #e2e8f0;font-size:.875rem;font-weight:600;color:#64748b;transition:.2s;"
+                                   class="msg-type-label">
+                                <input type="radio" name="type" value="{{ $val }}"
+                                       {{ old('type','text')===$val?'checked':'' }}
+                                       style="display:none;" onchange="handleTypeChange('{{ $val }}')">
+                                <i class="fas fa-{{ $info['icon'] }}"></i> {{ $info['label'] }}
+                            </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Message Content --}}
+                    <div class="hd-form-group" id="messageContentSection">
+                        <label class="hd-label hd-label--required"><i class="fas fa-comment"></i> محتوى الرسالة</label>
+                        <div class="hd-input-wrap">
+                            <i class="hd-input-icon fas fa-comment"></i>
+                            <textarea name="message" id="message" rows="5"
+                                      class="hd-input @error('message') hd-input--error @enderror"
+                                      placeholder="اكتب رسالتك هنا...">{{ old('message') }}</textarea>
+                        </div>
+                        <div style="font-size:.75rem;color:#94a3b8;margin-top:.3rem;">
+                            <span id="charCount" style="color:var(--hd-primary);font-weight:600;">0</span> / 1000 حرف
+                        </div>
+                        @error('message')<div class="hd-error-msg">{{ $errors->first('message') }}</div>@enderror
+                    </div>
+
+                    {{-- File Upload --}}
+                    <div class="hd-form-group d-none" id="fileUploadSection">
+                        <label class="hd-label"><i class="fas fa-upload"></i> رفع الملف</label>
+                        <div class="hd-upload-zone" onclick="document.getElementById('attachment').click()">
+                            <div class="hd-upload-zone__icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <div class="hd-upload-zone__title" id="uploadTitle">اضغط لرفع ملف</div>
+                            <div class="hd-upload-zone__hint" id="uploadHint">اختر الملف المناسب</div>
+                        </div>
+                        <input type="file" id="attachment" name="attachment" class="d-none" onchange="handleFileSelection(this)">
+                        <div id="filePreview" class="mt-2 d-none">
+                            <div style="background:#f8fafc;border-radius:10px;padding:.75rem 1rem;border:1px solid #e2e8f0;" id="filePreviewContent"></div>
+                        </div>
+                        @error('attachment')<div class="hd-error-msg">{{ $errors->first('attachment') }}</div>@enderror
+                    </div>
+
+                    {{-- Info --}}
+                    <div style="background:#eff6ff;border-radius:12px;padding:.875rem 1rem;margin-bottom:1.25rem;font-size:.82rem;color:#3b82f6;display:flex;align-items:center;gap:.5rem;">
+                        <i class="fas fa-info-circle"></i>
+                        <span>سيتم إرسال نسخة من هذه الرسالة إلى بريدك الإلكتروني وإلى بريد المستقبل.</span>
+                    </div>
+
+                    {{-- Actions --}}
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button type="submit" class="hd-btn hd-btn--primary" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i> إرسال الرسالة
+                        </button>
+                        <a href="{{ route('messages.index') }}" class="hd-btn hd-btn--secondary">
+                            <i class="fas fa-times"></i> إلغاء
+                        </a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
     </div>
 </div>
 
-<style>
-.form-label {
-    color: #495057;
-    margin-bottom: 0.5rem;
-}
+@endsection
 
-.form-control, .form-select {
-    border-radius: 10px;
-    border: 2px solid #e9ecef;
-    transition: all 0.3s ease;
-}
-
-.form-control:focus, .form-select:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-.form-check-input:checked {
-    background-color: #007bff;
-    border-color: #007bff;
-}
-
-.btn {
-    border-radius: 10px;
-    font-weight: 500;
-    padding: 0.75rem 1.5rem;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-}
-
-.card {
-    border-radius: 15px;
-}
-
-.card-header {
-    border-radius: 15px 15px 0 0 !important;
-}
-
-.alert {
-    border-radius: 10px;
-    border: none;
-}
-
-#charCount {
-    color: #007bff;
-    font-weight: 600;
-}
-</style>
-
+@section('scripts')
 <script>
+// Highlight active type label
+function updateTypeLabels() {
+    document.querySelectorAll('.msg-type-label').forEach(label => {
+        const radio = label.querySelector('input[type=radio]');
+        if (radio.checked) {
+            label.style.borderColor = 'var(--hd-primary)';
+            label.style.color = 'var(--hd-primary)';
+            label.style.background = '#eff0fe';
+        } else {
+            label.style.borderColor = '#e2e8f0';
+            label.style.color = '#64748b';
+            label.style.background = '';
+        }
+    });
+}
+
+function handleTypeChange(type) {
+    updateTypeLabels();
+    const fileSection = document.getElementById('fileUploadSection');
+    const msgSection  = document.getElementById('messageContentSection');
+    const msgArea     = document.getElementById('message');
+    const uploadHint  = document.getElementById('uploadHint');
+    const attach      = document.getElementById('attachment');
+
+    // reset file
+    attach.value = '';
+    document.getElementById('filePreview').classList.add('d-none');
+
+    const hints = { image:'JPG, PNG, GIF, WebP', video:'MP4, AVI, MOV, WebM', file:'PDF, Word, Excel, ZIP, RAR' };
+    const accepts = { image:'image/*', video:'video/*', file:'.pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx,.zip,.rar' };
+
+    if (type === 'text') {
+        fileSection.classList.add('d-none');
+        msgArea.required = true;
+    } else {
+        fileSection.classList.remove('d-none');
+        uploadHint.textContent = hints[type] || '';
+        attach.accept = accepts[type] || '';
+        msgArea.required = false;
+    }
+}
+
+function handleFileSelection(input) {
+    const file = input.files[0];
+    const preview = document.getElementById('filePreview');
+    const content = document.getElementById('filePreviewContent');
+    if (!file) { preview.classList.add('d-none'); return; }
+    preview.classList.remove('d-none');
+    content.innerHTML = `<div class="d-flex align-items-center gap-2">
+        <i class="fas fa-file-alt" style="font-size:1.4rem;color:var(--hd-primary);"></i>
+        <div class="flex-grow-1">
+            <div style="font-weight:700;font-size:.875rem;">${file.name}</div>
+            <div style="font-size:.75rem;color:#94a3b8;">${(file.size/1024).toFixed(1)} KB</div>
+        </div>
+        <button type="button" onclick="clearFile()" style="background:none;border:none;color:#ef4444;font-size:1.1rem;">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>`;
+
+    const type = document.querySelector('input[name="type"]:checked')?.value;
+    if (type === 'image' && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = e => {
+            content.innerHTML += `<div class="mt-2 text-center"><img src="${e.target.result}" style="max-height:150px;border-radius:8px;"></div>`;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+window.clearFile = function() {
+    document.getElementById('attachment').value = '';
+    document.getElementById('filePreview').classList.add('d-none');
+};
+
 document.addEventListener('DOMContentLoaded', function() {
-    const messageTextarea = document.getElementById('message');
-    const charCount = document.getElementById('charCount');
-    const submitBtn = document.getElementById('submitBtn');
-    const fileUploadSection = document.getElementById('fileUploadSection');
-    const filePreviewSection = document.getElementById('filePreviewSection');
-    const fileInput = document.getElementById('attachment');
-    const fileHelpText = document.getElementById('fileHelpText');
-    const filePreview = document.getElementById('filePreview');
-    const messageContentSection = document.getElementById('messageContentSection');
-    
-    // Message type radio buttons
-    const typeRadios = document.querySelectorAll('input[name="type"]');
-    
+    updateTypeLabels();
+
     // Character counter
-    messageTextarea.addEventListener('input', function() {
+    document.getElementById('message').addEventListener('input', function() {
         const count = this.value.length;
-        charCount.textContent = count;
-        
-        if (count > 1000) {
-            charCount.style.color = '#dc3545';
-            this.classList.add('is-invalid');
-        } else {
-            charCount.style.color = '#007bff';
-            this.classList.remove('is-invalid');
-        }
+        const el = document.getElementById('charCount');
+        el.textContent = count;
+        el.style.color = count > 1000 ? '#ef4444' : 'var(--hd-primary)';
     });
-    
-    // Handle message type changes
-    typeRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            const selectedType = this.value;
-            handleMessageTypeChange(selectedType);
-        });
-    });
-    
-    // File input change handler
-    fileInput.addEventListener('change', function() {
-        handleFileSelection(this.files[0]);
-    });
-    
-    function handleMessageTypeChange(type) {
-        // Reset file input
-        fileInput.value = '';
-        filePreviewSection.style.display = 'none';
-        filePreview.innerHTML = '';
-        
-        switch(type) {
-            case 'text':
-                fileUploadSection.style.display = 'none';
-                messageContentSection.style.display = 'block';
-                messageTextarea.required = true;
-                messageTextarea.placeholder = 'اكتب رسالتك هنا...';
-                break;
-                
-            case 'image':
-                fileUploadSection.style.display = 'block';
-                messageContentSection.style.display = 'block';
-                fileInput.accept = 'image/*';
-                fileHelpText.textContent = 'اختر صورة (JPG, PNG, GIF, WebP)';
-                messageTextarea.placeholder = 'اكتب وصف للصورة (اختياري)...';
-                messageTextarea.required = false;
-                break;
-                
-            case 'video':
-                fileUploadSection.style.display = 'block';
-                messageContentSection.style.display = 'block';
-                fileInput.accept = 'video/*';
-                fileHelpText.textContent = 'اختر فيديو (MP4, AVI, MOV, WebM)';
-                messageTextarea.placeholder = 'اكتب وصف للفيديو (اختياري)...';
-                messageTextarea.required = false;
-                break;
-                
-            case 'file':
-                fileUploadSection.style.display = 'block';
-                messageContentSection.style.display = 'block';
-                fileInput.accept = '.pdf,.doc,.docx,.txt,.xls,.xlsx,.ppt,.pptx,.zip,.rar';
-                fileHelpText.textContent = 'اختر ملف (PDF, Word, Excel, PowerPoint, ZIP, RAR)';
-                messageTextarea.placeholder = 'اكتب وصف للملف (اختياري)...';
-                messageTextarea.required = false;
-                break;
-        }
-    }
-    
-    function handleFileSelection(file) {
-        if (!file) {
-            filePreviewSection.style.display = 'none';
-            return;
-        }
-        
-        filePreviewSection.style.display = 'block';
-        const selectedType = document.querySelector('input[name="type"]:checked').value;
-        
-        // Show file info
-        const fileInfo = `
-            <div class="d-flex align-items-center">
-                <div class="me-3">
-                    <i class="fas fa-${getFileIcon(selectedType)} fa-2x text-primary"></i>
-                </div>
-                <div class="flex-grow-1">
-                    <h6 class="mb-1">${file.name}</h6>
-                    <small class="text-muted">الحجم: ${formatFileSize(file.size)}</small>
-                </div>
-                <button type="button" class="btn btn-outline-danger btn-sm" onclick="clearFile()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-        `;
-        
-        filePreview.innerHTML = fileInfo;
-        
-        // Show preview for images
-        if (selectedType === 'image' && file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const imagePreview = `
-                    <div class="mt-3">
-                        <img src="${e.target.result}" class="img-fluid rounded" style="max-height: 200px;" alt="معاينة الصورة">
-                    </div>
-                `;
-                filePreview.innerHTML = fileInfo + imagePreview;
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-    
-    function getFileIcon(type) {
-        switch(type) {
-            case 'image': return 'image';
-            case 'video': return 'video';
-            case 'file': return 'file';
-            default: return 'file';
-        }
-    }
-    
-    function formatFileSize(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-    }
-    
-    // Global function to clear file
-    window.clearFile = function() {
-        fileInput.value = '';
-        filePreviewSection.style.display = 'none';
-        filePreview.innerHTML = '';
-    };
-    
-    // Initialize with default type
-    const defaultType = document.querySelector('input[name="type"]:checked');
-    if (defaultType) {
-        handleMessageTypeChange(defaultType.value);
-    }
-    
-    // Form submission
+
+    // Submit spinner
     document.getElementById('messageForm').addEventListener('submit', function(e) {
-        const message = messageTextarea.value.trim();
+        const type = document.querySelector('input[name="type"]:checked')?.value;
+        const msg = document.getElementById('message').value.trim();
         const receiver = document.getElementById('receiver_id').value;
-        const selectedType = document.querySelector('input[name="type"]:checked').value;
-        const hasFile = fileInput.files.length > 0;
-        
-        // Validation based on message type
-        if (!receiver) {
-            e.preventDefault();
-            alert('يرجى اختيار المستقبل');
-            return;
-        }
-        
-        if (selectedType === 'text') {
-            if (!message) {
-                e.preventDefault();
-                alert('يرجى كتابة محتوى الرسالة');
-                return;
-            }
-        } else {
-            if (!message && !hasFile) {
-                e.preventDefault();
-                alert('يرجى كتابة وصف أو رفع ملف');
-                return;
-            }
-        }
-        
-        if (message && message.length > 1000) {
-            e.preventDefault();
-            alert('الرسالة طويلة جداً. الحد الأقصى 1000 حرف');
-            return;
-        }
-        
-        // File size validation (10MB limit)
-        if (hasFile && fileInput.files[0].size > 10 * 1024 * 1024) {
-            e.preventDefault();
-            alert('حجم الملف كبير جداً. الحد الأقصى 10 ميجابايت');
-            return;
-        }
-        
-        // Disable submit button to prevent double submission
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>جاري الإرسال...';
+        const hasFile = document.getElementById('attachment').files.length > 0;
+
+        if (!receiver) { e.preventDefault(); alert('يرجى اختيار المستقبل'); return; }
+        if (type === 'text' && !msg) { e.preventDefault(); alert('يرجى كتابة محتوى الرسالة'); return; }
+        if (type !== 'text' && !msg && !hasFile) { e.preventDefault(); alert('يرجى كتابة وصف أو رفع ملف'); return; }
+        if (msg.length > 1000) { e.preventDefault(); alert('الرسالة طويلة جداً'); return; }
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الإرسال...';
     });
 });
 </script>
 @endsection
-

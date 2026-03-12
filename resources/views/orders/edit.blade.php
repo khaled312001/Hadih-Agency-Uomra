@@ -1,713 +1,199 @@
-@extends('layouts.app')
+@extends('layouts.user')
 
 @section('title', 'تعديل طلب العمرة - هدية')
+@section('page-title', 'تعديل طلب العمرة')
+@section('page-description', 'تعديل بيانات الطلب رقم {{ $order->order_number }}')
 
 @section('content')
-<style>
-    .order-edit-container {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        padding: 2rem 0;
-    }
-    
-    .form-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        border-radius: 25px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        overflow: hidden;
-        animation: slideUp 0.6s ease-out;
-    }
-    
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .form-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 2rem;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .form-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        animation: float 6s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-        0%, 100% { transform: translateY(0px) rotate(0deg); }
-        50% { transform: translateY(-20px) rotate(180deg); }
-    }
-    
-    .form-header h2 {
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        position: relative;
-        z-index: 2;
-    }
-    
-    .form-header p {
-        opacity: 0.9;
-        margin: 0;
-        position: relative;
-        z-index: 2;
-    }
-    
-    .form-body {
-        padding: 2.5rem;
-    }
-    
-    .form-group {
-        margin-bottom: 1.5rem;
-        position: relative;
-    }
-    
-    .form-label {
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.75rem;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .form-label i {
-        color: #667eea;
-        font-size: 1.1rem;
-    }
-    
-    .form-control, .form-select {
-        border: 2px solid #e9ecef;
-        border-radius: 15px;
-        padding: 1rem 1.25rem;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(10px);
-    }
-    
-    .form-control:focus, .form-select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        background: rgba(255, 255, 255, 0.95);
-        transform: translateY(-2px);
-    }
-    
-    .form-control:hover, .form-select:hover {
-        border-color: #667eea;
-        transform: translateY(-1px);
-    }
-    
-    .btn {
-        border-radius: 15px;
-        padding: 1rem 2rem;
-        font-weight: 600;
-        font-size: 1.1rem;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-        transition: left 0.5s;
-    }
-    
-    .btn:hover::before {
-        left: 100%;
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-    }
-    
-    .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
-    }
-    
-    .btn-secondary {
-        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
-        border: none;
-        box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3);
-    }
-    
-    .btn-secondary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px rgba(108, 117, 125, 0.4);
-    }
-    
-    .package-preview {
-        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-        border: 2px solid #e9ecef;
-        transition: all 0.3s ease;
-    }
-    
-    .package-preview:hover {
-        border-color: #667eea;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    }
-    
-    .package-name {
-        font-weight: 700;
-        color: #2c3e50;
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-    }
-    
-    .package-price {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #667eea;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-    
-    .currency-icon {
-        width: 24px;
-        height: 24px;
-        border-radius: 50%;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .form-section {
-        margin-bottom: 2rem;
-        padding: 1.5rem;
-        background: rgba(255, 255, 255, 0.5);
-        border-radius: 15px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-    }
-    
-    .section-title {
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        font-size: 1.2rem;
-    }
-    
-    .section-title i {
-        color: #667eea;
-        font-size: 1.3rem;
-    }
-    
-    .floating-elements {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1;
-    }
-    
-    .floating-element {
-        position: absolute;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        animation: floatAround 20s infinite linear;
-    }
-    
-    .floating-element:nth-child(1) {
-        width: 80px;
-        height: 80px;
-        top: 20%;
-        left: 10%;
-        animation-delay: 0s;
-    }
-    
-    .floating-element:nth-child(2) {
-        width: 60px;
-        height: 60px;
-        top: 60%;
-        right: 15%;
-        animation-delay: -7s;
-    }
-    
-    .floating-element:nth-child(3) {
-        width: 100px;
-        height: 100px;
-        bottom: 20%;
-        left: 20%;
-        animation-delay: -14s;
-    }
-    
-    @keyframes floatAround {
-        0% { transform: translateY(0px) rotate(0deg); }
-        33% { transform: translateY(-30px) rotate(120deg); }
-        66% { transform: translateY(15px) rotate(240deg); }
-        100% { transform: translateY(0px) rotate(360deg); }
-    }
-    
-    @media (max-width: 768px) {
-        .form-body {
-            padding: 1.5rem;
-        }
-        
-        .form-header {
-            padding: 1.5rem;
-        }
-        
-        .btn {
-            width: 100%;
-            margin-bottom: 0.5rem;
-        }
-    }
-</style>
 
-<div class="order-edit-container">
-    <div class="floating-elements">
-        <div class="floating-element"></div>
-        <div class="floating-element"></div>
-        <div class="floating-element"></div>
-    </div>
-    
-<div class="container">
-    <div class="row justify-content-center">
-            <div class="col-lg-8 col-xl-6">
-                <div class="form-card">
-                    <!-- Header -->
-                    <div class="form-header">
-                        <img src="{{ asset('images/logo.jpg') }}" alt="هدية" style="height: 60px; width: auto;" class="mb-3" onerror="this.style.display='none'">
-                        <h2>تعديل طلب العمرة</h2>
-                        <p>رقم الطلب: {{ $order->order_number }}</p>
+<form method="POST" action="{{ route('orders.update', $order) }}" id="orderEditForm">
+    @csrf
+    @method('PUT')
+
+    <div class="row g-3">
+
+        {{-- Package Info (read-only) --}}
+        <div class="col-12">
+            <div class="hd-card">
+                <div class="hd-card-header">
+                    <div class="hd-card-header__left">
+                        <div class="hd-card-header__icon" style="background:var(--hd-grad-primary);">
+                            <i class="fas fa-kaaba"></i>
+                        </div>
+                        <span class="hd-card-header__title">حزمة العمرة المختارة</span>
+                    </div>
+                    <span class="hd-badge" style="background:#f0fdf4;color:#22c55e;">
+                        <i class="fas fa-lock"></i> غير قابلة للتعديل
+                    </span>
                 </div>
-                    
-                    <!-- Form Body -->
-                    <div class="form-body">
-                        <form method="POST" action="{{ route('orders.update', $order) }}" id="orderEditForm">
-                        @csrf
-                        @method('PUT')
-                        
-                            <!-- Package Information Section (Read-only) -->
-                            <div class="form-section">
-                                <div class="section-title">
-                                    <i class="fas fa-box"></i>
-                                    معلومات حزمة العمرة
-                                </div>
-                                
-                                <div class="package-preview">
-                                    <div class="package-name">{{ $order->umrahPackage->name_ar }}</div>
-                                    <div class="package-price">
-                                        <span>{{ number_format($order->umrahPackage->price) }}</span>
-                                        <img src="{{ \App\Helpers\CurrencyHelper::getCurrencyImage($order->umrahPackage->currency) }}" alt="{{ $order->umrahPackage->currency }}" class="currency-icon">
-                                        <span>{{ $order->umrahPackage->currency }}</span>
-                                    </div>
-                                    @if($order->umrahPackage->description_ar)
-                                    <p class="text-muted mt-2 mb-0">{{ $order->umrahPackage->description_ar }}</p>
-                                    @endif
+                <div class="hd-card-body--sm">
+                    <div style="background:#f8fafc;border-radius:14px;padding:1.25rem;border:1px solid #e2e8f0;">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-auto">
+                                <div style="width:52px;height:52px;border-radius:14px;background:var(--hd-grad-primary);display:flex;align-items:center;justify-content:center;">
+                                    <i class="fas fa-kaaba" style="font-size:1.4rem;color:#fff;"></i>
                                 </div>
                             </div>
-                            
-                            <!-- Beneficiary Information Section -->
-                            <div class="form-section">
-                                <div class="section-title">
-                                    <i class="fas fa-user"></i>
-                                    معلومات المستفيد
+                            <div class="col">
+                                <div style="font-weight:800;font-size:1.05rem;color:#1e293b;">{{ $order->umrahPackage->name_ar }}</div>
+                                @if($order->umrahPackage->description_ar)
+                                    <div style="font-size:.8rem;color:#64748b;margin-top:.2rem;">{{ $order->umrahPackage->description_ar }}</div>
+                                @endif
+                            </div>
+                            <div class="col-auto text-end">
+                                <div style="font-size:1.4rem;font-weight:800;color:var(--hd-primary);">
+                                    {{ number_format($order->umrahPackage->price) }} {{ $order->umrahPackage->currency }}
                                 </div>
-                                
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="beneficiary_name" class="form-label">
-                                                <i class="fas fa-user-circle"></i>
-                                                اسم المستفيد
-                                            </label>
-                                            <input type="text" class="form-control @error('beneficiary_name') is-invalid @enderror" 
-                                                   id="beneficiary_name" name="beneficiary_name" 
-                                                   value="{{ old('beneficiary_name', $order->beneficiary_name) }}" 
-                                                   placeholder="أدخل اسم المستفيد" required>
-                            @error('beneficiary_name')
-                                                <div class="invalid-feedback">
-                                                    <strong>{{ $message }}</strong>
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="beneficiary_phone" class="form-label">
-                                                <i class="fas fa-phone"></i>
-                                                هاتف المستفيد
-                                            </label>
-                                            <input type="tel" class="form-control @error('beneficiary_phone') is-invalid @enderror" 
-                                                   id="beneficiary_phone" name="beneficiary_phone" 
-                                                   value="{{ old('beneficiary_phone', $order->beneficiary_phone) }}" 
-                                                   placeholder="أدخل رقم الهاتف" required>
-                                            @error('beneficiary_phone')
-                                                <div class="invalid-feedback">
-                                                    <strong>{{ $message }}</strong>
-                                                </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- WhatsApp Phone Section -->
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label class="form-label">
-                                                <i class="fab fa-whatsapp"></i>
-                                                رقم واتساب للتواصل وإرسال فيديو الإثبات
-                                            </label>
-                                            <div class="row">
-                                                <div class="col-md-4">
-                                                    <select class="form-select @error('whatsapp_country_code') is-invalid @enderror" 
-                                                            id="whatsapp_country_code" name="whatsapp_country_code" required>
-                                                        <option value="">كود الدولة</option>
-                                                        <option value="+966" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+966' ? 'selected' : '' }}>🇸🇦 السعودية (+966)</option>
-                                                        <option value="+971" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+971' ? 'selected' : '' }}>🇦🇪 الإمارات (+971)</option>
-                                                        <option value="+965" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+965' ? 'selected' : '' }}>🇰🇼 الكويت (+965)</option>
-                                                        <option value="+973" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+973' ? 'selected' : '' }}>🇧🇭 البحرين (+973)</option>
-                                                        <option value="+974" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+974' ? 'selected' : '' }}>🇶🇦 قطر (+974)</option>
-                                                        <option value="+968" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+968' ? 'selected' : '' }}>🇴🇲 عمان (+968)</option>
-                                                        <option value="+20" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+20' ? 'selected' : '' }}>🇪🇬 مصر (+20)</option>
-                                                        <option value="+212" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+212' ? 'selected' : '' }}>🇲🇦 المغرب (+212)</option>
-                                                        <option value="+213" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+213' ? 'selected' : '' }}>🇩🇿 الجزائر (+213)</option>
-                                                        <option value="+216" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+216' ? 'selected' : '' }}>🇹🇳 تونس (+216)</option>
-                                                        <option value="+218" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+218' ? 'selected' : '' }}>🇱🇾 ليبيا (+218)</option>
-                                                        <option value="+249" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+249' ? 'selected' : '' }}>🇸🇩 السودان (+249)</option>
-                                                        <option value="+964" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+964' ? 'selected' : '' }}>🇮🇶 العراق (+964)</option>
-                                                        <option value="+963" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+963' ? 'selected' : '' }}>🇸🇾 سوريا (+963)</option>
-                                                        <option value="+961" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+961' ? 'selected' : '' }}>🇱🇧 لبنان (+961)</option>
-                                                        <option value="+962" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+962' ? 'selected' : '' }}>🇯🇴 الأردن (+962)</option>
-                                                        <option value="+972" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+972' ? 'selected' : '' }}>🇵🇸 فلسطين (+972)</option>
-                                                        <option value="+90" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+90' ? 'selected' : '' }}>🇹🇷 تركيا (+90)</option>
-                                                        <option value="+98" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+98' ? 'selected' : '' }}>🇮🇷 إيران (+98)</option>
-                                                        <option value="+93" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+93' ? 'selected' : '' }}>🇦🇫 أفغانستان (+93)</option>
-                                                        <option value="+92" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+92' ? 'selected' : '' }}>🇵🇰 باكستان (+92)</option>
-                                                        <option value="+91" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+91' ? 'selected' : '' }}>🇮🇳 الهند (+91)</option>
-                                                        <option value="+880" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+880' ? 'selected' : '' }}>🇧🇩 بنغلاديش (+880)</option>
-                                                        <option value="+94" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+94' ? 'selected' : '' }}>🇱🇰 سريلانكا (+94)</option>
-                                                        <option value="+977" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+977' ? 'selected' : '' }}>🇳🇵 نيبال (+977)</option>
-                                                        <option value="+1" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+1' ? 'selected' : '' }}>🇺🇸 الولايات المتحدة (+1)</option>
-                                                        <option value="+44" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+44' ? 'selected' : '' }}>🇬🇧 المملكة المتحدة (+44)</option>
-                                                        <option value="+33" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+33' ? 'selected' : '' }}>🇫🇷 فرنسا (+33)</option>
-                                                        <option value="+49" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+49' ? 'selected' : '' }}>🇩🇪 ألمانيا (+49)</option>
-                                                        <option value="+39" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+39' ? 'selected' : '' }}>🇮🇹 إيطاليا (+39)</option>
-                                                        <option value="+34" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+34' ? 'selected' : '' }}>🇪🇸 إسبانيا (+34)</option>
-                                                        <option value="+31" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+31' ? 'selected' : '' }}>🇳🇱 هولندا (+31)</option>
-                                                        <option value="+32" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+32' ? 'selected' : '' }}>🇧🇪 بلجيكا (+32)</option>
-                                                        <option value="+41" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+41' ? 'selected' : '' }}>🇨🇭 سويسرا (+41)</option>
-                                                        <option value="+43" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+43' ? 'selected' : '' }}>🇦🇹 النمسا (+43)</option>
-                                                        <option value="+46" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+46' ? 'selected' : '' }}>🇸🇪 السويد (+46)</option>
-                                                        <option value="+47" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+47' ? 'selected' : '' }}>🇳🇴 النرويج (+47)</option>
-                                                        <option value="+45" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+45' ? 'selected' : '' }}>🇩🇰 الدنمارك (+45)</option>
-                                                        <option value="+358" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+358' ? 'selected' : '' }}>🇫🇮 فنلندا (+358)</option>
-                                                        <option value="+7" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+7' ? 'selected' : '' }}>🇷🇺 روسيا (+7)</option>
-                                                        <option value="+86" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+86' ? 'selected' : '' }}>🇨🇳 الصين (+86)</option>
-                                                        <option value="+81" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+81' ? 'selected' : '' }}>🇯🇵 اليابان (+81)</option>
-                                                        <option value="+82" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+82' ? 'selected' : '' }}>🇰🇷 كوريا الجنوبية (+82)</option>
-                                                        <option value="+65" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+65' ? 'selected' : '' }}>🇸🇬 سنغافورة (+65)</option>
-                                                        <option value="+60" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+60' ? 'selected' : '' }}>🇲🇾 ماليزيا (+60)</option>
-                                                        <option value="+66" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+66' ? 'selected' : '' }}>🇹🇭 تايلاند (+66)</option>
-                                                        <option value="+63" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+63' ? 'selected' : '' }}>🇵🇭 الفلبين (+63)</option>
-                                                        <option value="+62" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+62' ? 'selected' : '' }}>🇮🇩 إندونيسيا (+62)</option>
-                                                        <option value="+84" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+84' ? 'selected' : '' }}>🇻🇳 فيتنام (+84)</option>
-                                                        <option value="+55" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+55' ? 'selected' : '' }}>🇧🇷 البرازيل (+55)</option>
-                                                        <option value="+52" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+52' ? 'selected' : '' }}>🇲🇽 المكسيك (+52)</option>
-                                                        <option value="+54" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+54' ? 'selected' : '' }}>🇦🇷 الأرجنتين (+54)</option>
-                                                        <option value="+56" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+56' ? 'selected' : '' }}>🇨🇱 تشيلي (+56)</option>
-                                                        <option value="+57" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+57' ? 'selected' : '' }}>🇨🇴 كولومبيا (+57)</option>
-                                                        <option value="+51" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+51' ? 'selected' : '' }}>🇵🇪 بيرو (+51)</option>
-                                                        <option value="+58" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+58' ? 'selected' : '' }}>🇻🇪 فنزويلا (+58)</option>
-                                                        <option value="+27" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+27' ? 'selected' : '' }}>🇿🇦 جنوب أفريقيا (+27)</option>
-                                                        <option value="+234" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+234' ? 'selected' : '' }}>🇳🇬 نيجيريا (+234)</option>
-                                                        <option value="+254" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+254' ? 'selected' : '' }}>🇰🇪 كينيا (+254)</option>
-                                                        <option value="+61" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+61' ? 'selected' : '' }}>🇦🇺 أستراليا (+61)</option>
-                                                        <option value="+64" {{ old('whatsapp_country_code', $order->whatsapp_country_code) == '+64' ? 'selected' : '' }}>🇳🇿 نيوزيلندا (+64)</option>
-                                                    </select>
-                                                    @error('whatsapp_country_code')
-                                                        <div class="invalid-feedback">
-                                                            <strong>{{ $message }}</strong>
-                                                        </div>
-                                                    @enderror
-                                                </div>
-                                                <div class="col-md-8">
-                                                    <input type="tel" class="form-control @error('whatsapp_phone') is-invalid @enderror" 
-                                                           id="whatsapp_phone" name="whatsapp_phone" 
-                                                           value="{{ old('whatsapp_phone', $order->whatsapp_phone) }}" 
-                                                           placeholder="أدخل رقم الواتساب بدون كود الدولة" required>
-                                                    @error('whatsapp_phone')
-                                                        <div class="invalid-feedback">
-                                                            <strong>{{ $message }}</strong>
-                                                        </div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-                                            <small class="form-text text-muted">
-                                                <i class="fas fa-info-circle"></i>
-                                                يجب توافر رقم واتساب لإرسال فيديو الإثبات والتواصل عليه
-                                            </small>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="beneficiary_address" class="form-label">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        عنوان المستفيد
-                                    </label>
-                                    <textarea class="form-control @error('beneficiary_address') is-invalid @enderror" 
-                                              id="beneficiary_address" name="beneficiary_address" 
-                                              rows="3" placeholder="أدخل عنوان المستفيد">{{ old('beneficiary_address', $order->beneficiary_address) }}</textarea>
-                                    @error('beneficiary_address')
-                                        <div class="invalid-feedback">
-                                    <strong>{{ $message }}</strong>
-                                        </div>
-                            @enderror
+                                @if($order->umrahPackage->duration)
+                                    <div style="font-size:.75rem;color:#94a3b8;">المدة: {{ $order->umrahPackage->duration }}</div>
+                                @endif
+                            </div>
                         </div>
-                        
-                                <div class="form-group">
-                                    <label for="beneficiary_type" class="form-label">
-                                        <i class="fas fa-heart"></i>
-                                        نوع المستفيد
-                                    </label>
-                                    <select class="form-select @error('beneficiary_type') is-invalid @enderror" id="beneficiary_type" name="beneficiary_type" required>
-                                        <option value="">اختر نوع المستفيد</option>
-                                        <option value="deceased" {{ old('beneficiary_type', $order->beneficiary_type) == 'deceased' ? 'selected' : '' }}>
-                                            متوفى
-                                        </option>
-                                        <option value="sick" {{ old('beneficiary_type', $order->beneficiary_type) == 'sick' ? 'selected' : '' }}>
-                                            مريض
-                                        </option>
-                                        <option value="elderly" {{ old('beneficiary_type', $order->beneficiary_type) == 'elderly' ? 'selected' : '' }}>
-                                            مسن
-                                        </option>
-                                        <option value="disabled" {{ old('beneficiary_type', $order->beneficiary_type) == 'disabled' ? 'selected' : '' }}>
-                                            معاق
-                                        </option>
-                                    </select>
-                                    @error('beneficiary_type')
-                                        <div class="invalid-feedback">
-                                    <strong>{{ $message }}</strong>
-                                        </div>
-                            @enderror
-                        </div>
-                        
-                                <div class="form-group">
-                                    <label for="beneficiary_details" class="form-label">
-                                        <i class="fas fa-info-circle"></i>
-                                        تفاصيل إضافية
-                                    </label>
-                                    <textarea class="form-control @error('beneficiary_details') is-invalid @enderror" 
-                                              id="beneficiary_details" name="beneficiary_details" 
-                                              rows="4" placeholder="أدخل أي تفاصيل إضافية حول المستفيد">{{ old('beneficiary_details', $order->beneficiary_details) }}</textarea>
-                            @error('beneficiary_details')
-                                        <div class="invalid-feedback">
-                                    <strong>{{ $message }}</strong>
-                                        </div>
-                            @enderror
-                                </div>
-                        </div>
-                        
-                            <!-- Action Buttons -->
-                            <div class="d-flex gap-3 justify-content-center flex-wrap">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>حفظ التغييرات
-                            </button>
-                                <a href="{{ route('orders.show', $order) }}" class="btn btn-secondary">
-                                    <i class="fas fa-eye me-2"></i>عرض الطلب
-                                </a>
-                                <a href="{{ route('orders.index') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times me-2"></i>إلغاء
-                            </a>
-                        </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-</div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Form validation enhancement
-    const form = document.getElementById('orderEditForm');
-    form.addEventListener('submit', function(e) {
-        const requiredFields = form.querySelectorAll('[required]');
-        let isValid = true;
-        
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                field.classList.add('is-invalid');
-                isValid = false;
-            } else {
-                field.classList.remove('is-invalid');
-            }
-        });
-        
-        if (!isValid) {
-            e.preventDefault();
-            alert('يرجى ملء جميع الحقول المطلوبة');
-        }
-    });
-    
-    // Real-time validation
-    const inputs = form.querySelectorAll('input, select, textarea');
-    inputs.forEach(input => {
-        input.addEventListener('blur', function() {
-            if (this.hasAttribute('required') && !this.value.trim()) {
-                this.classList.add('is-invalid');
-            } else {
-                this.classList.remove('is-invalid');
-            }
-        });
-        
-        input.addEventListener('input', function() {
-            if (this.classList.contains('is-invalid') && this.value.trim()) {
-                this.classList.remove('is-invalid');
-            }
-        });
-    });
-    
-    // Phone number formatting
-    const phoneInput = document.getElementById('beneficiary_phone');
-    phoneInput.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        if (value.length > 0) {
-            if (value.startsWith('966')) {
-                value = value.substring(3);
-            }
-            if (value.length >= 9) {
-                value = value.substring(0, 9);
-            }
-            this.value = value;
-        }
-    });
-    
-    // WhatsApp phone number formatting
-    const whatsappPhoneInput = document.getElementById('whatsapp_phone');
-    const whatsappCountryCodeSelect = document.getElementById('whatsapp_country_code');
-    
-    whatsappPhoneInput.addEventListener('input', function() {
-        let value = this.value.replace(/\D/g, '');
-        
-        // Remove country code if user types it
-        const selectedCountryCode = whatsappCountryCodeSelect.value;
-        if (selectedCountryCode && value.startsWith(selectedCountryCode.replace('+', ''))) {
-            value = value.substring(selectedCountryCode.replace('+', '').length);
-        }
-        
-        // Limit length based on country code
-        let maxLength = 15; // Default max length
-        if (selectedCountryCode) {
-            switch(selectedCountryCode) {
-                case '+966': // Saudi Arabia
-                    maxLength = 9;
-                    break;
-                case '+971': // UAE
-                    maxLength = 9;
-                    break;
-                case '+965': // Kuwait
-                    maxLength = 8;
-                    break;
-                case '+973': // Bahrain
-                    maxLength = 8;
-                    break;
-                case '+974': // Qatar
-                    maxLength = 8;
-                    break;
-                case '+968': // Oman
-                    maxLength = 8;
-                    break;
-                case '+20': // Egypt
-                    maxLength = 10;
-                    break;
-                case '+1': // US/Canada
-                    maxLength = 10;
-                    break;
-                case '+44': // UK
-                    maxLength = 10;
-                    break;
-                default:
-                    maxLength = 15;
-            }
-        }
-        
-        if (value.length > maxLength) {
-            value = value.substring(0, maxLength);
-        }
-        
-        this.value = value;
-    });
-    
-    // Update placeholder based on selected country
-    whatsappCountryCodeSelect.addEventListener('change', function() {
-        const selectedCode = this.value;
-        let placeholder = 'أدخل رقم الواتساب بدون كود الدولة';
-        
-        if (selectedCode) {
-            switch(selectedCode) {
-                case '+966':
-                    placeholder = 'مثال: 501234567';
-                    break;
-                case '+971':
-                    placeholder = 'مثال: 501234567';
-                    break;
-                case '+965':
-                    placeholder = 'مثال: 12345678';
-                    break;
-                case '+973':
-                    placeholder = 'مثال: 12345678';
-                    break;
-                case '+974':
-                    placeholder = 'مثال: 12345678';
-                    break;
-                case '+968':
-                    placeholder = 'مثال: 12345678';
-                    break;
-                case '+20':
-                    placeholder = 'مثال: 1012345678';
-                    break;
-                case '+1':
-                    placeholder = 'مثال: 1234567890';
-                    break;
-                case '+44':
-                    placeholder = 'مثال: 1234567890';
-                    break;
-                default:
-                    placeholder = 'أدخل رقم الواتساب بدون كود الدولة';
-            }
-        }
-        
-        whatsappPhoneInput.placeholder = placeholder;
-    });
-});
-</script>
+        {{-- Beneficiary Info --}}
+        <div class="col-12">
+            <div class="hd-form-section">
+                <div class="hd-form-section__header" style="background:linear-gradient(135deg,#0f3460,#1a1a2e);">
+                    <div class="hd-form-section__header-icon"><i class="fas fa-user-circle"></i></div>
+                    <div>
+                        <div class="hd-form-section__header-title">معلومات المستفيد</div>
+                        <div style="font-size:.75rem;color:rgba(255,255,255,.75);">عدّل بيانات المستفيد</div>
+                    </div>
+                </div>
+                <div class="hd-form-section__body">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <div class="hd-form-group">
+                                <label class="hd-label hd-label--required"><i class="fas fa-user"></i> اسم المستفيد</label>
+                                <div class="hd-input-wrap">
+                                    <i class="hd-input-icon fas fa-user"></i>
+                                    <input type="text" name="beneficiary_name"
+                                           class="hd-input @error('beneficiary_name') hd-input--error @enderror"
+                                           value="{{ old('beneficiary_name', $order->beneficiary_name) }}"
+                                           placeholder="أدخل اسم المستفيد" required>
+                                </div>
+                                @error('beneficiary_name')<div class="hd-error-msg">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="hd-form-group">
+                                <label class="hd-label hd-label--required"><i class="fas fa-phone"></i> هاتف المستفيد</label>
+                                <div class="hd-input-wrap">
+                                    <i class="hd-input-icon fas fa-phone"></i>
+                                    <input type="tel" name="beneficiary_phone"
+                                           class="hd-input @error('beneficiary_phone') hd-input--error @enderror"
+                                           value="{{ old('beneficiary_phone', $order->beneficiary_phone) }}"
+                                           placeholder="رقم الهاتف" required>
+                                </div>
+                                @error('beneficiary_phone')<div class="hd-error-msg">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="hd-form-group">
+                                <label class="hd-label hd-label--required">
+                                    <i class="fab fa-whatsapp" style="color:#25d366;"></i>
+                                    رقم واتساب للتواصل وإرسال فيديو الإثبات
+                                </label>
+                                <div class="row g-2">
+                                    <div class="col-5 col-md-3">
+                                        <select name="whatsapp_country_code" id="whatsapp_country_code"
+                                                class="hd-input hd-select @error('whatsapp_country_code') hd-input--error @enderror" required>
+                                            <option value="">كود الدولة</option>
+                                            @foreach(['+966'=>'🇸🇦 +966','+971'=>'🇦🇪 +971','+965'=>'🇰🇼 +965','+973'=>'🇧🇭 +973','+974'=>'🇶🇦 +974','+968'=>'🇴🇲 +968','+20'=>'🇪🇬 +20','+212'=>'🇲🇦 +212','+213'=>'🇩🇿 +213','+216'=>'🇹🇳 +216','+249'=>'🇸🇩 +249','+964'=>'🇮🇶 +964','+962'=>'🇯🇴 +962','+963'=>'🇸🇾 +963','+961'=>'🇱🇧 +961','+92'=>'🇵🇰 +92','+91'=>'🇮🇳 +91','+880'=>'🇧🇩 +880','+1'=>'🇺🇸 +1','+44'=>'🇬🇧 +44'] as $code=>$label)
+                                                <option value="{{ $code }}" {{ old('whatsapp_country_code',$order->whatsapp_country_code)===$code?'selected':'' }}>{{ $label }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('whatsapp_country_code')<div class="hd-error-msg">{{ $message }}</div>@enderror
+                                    </div>
+                                    <div class="col-7 col-md-9">
+                                        <div class="hd-input-wrap">
+                                            <i class="hd-input-icon fab fa-whatsapp" style="color:#25d366;"></i>
+                                            <input type="tel" name="whatsapp_phone"
+                                                   class="hd-input @error('whatsapp_phone') hd-input--error @enderror"
+                                                   value="{{ old('whatsapp_phone', $order->whatsapp_phone) }}"
+                                                   placeholder="رقم الواتساب بدون كود الدولة" required>
+                                        </div>
+                                        @error('whatsapp_phone')<div class="hd-error-msg">{{ $message }}</div>@enderror
+                                    </div>
+                                </div>
+                                <div style="font-size:.75rem;color:#94a3b8;margin-top:.35rem;">
+                                    <i class="fas fa-info-circle me-1"></i>يجب توافر رقم واتساب لإرسال فيديو الإثبات
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="hd-form-group">
+                                <label class="hd-label"><i class="fas fa-map-marker-alt"></i> عنوان المستفيد</label>
+                                <div class="hd-input-wrap">
+                                    <i class="hd-input-icon fas fa-map-marker-alt"></i>
+                                    <textarea name="beneficiary_address" rows="2"
+                                              class="hd-input @error('beneficiary_address') hd-input--error @enderror"
+                                              placeholder="أدخل عنوان المستفيد">{{ old('beneficiary_address', $order->beneficiary_address) }}</textarea>
+                                </div>
+                                @error('beneficiary_address')<div class="hd-error-msg">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="hd-form-group">
+                                <label class="hd-label hd-label--required"><i class="fas fa-heart"></i> نوع المستفيد</label>
+                                <div class="hd-input-wrap">
+                                    <i class="hd-input-icon fas fa-heart"></i>
+                                    <select name="beneficiary_type"
+                                            class="hd-input hd-select @error('beneficiary_type') hd-input--error @enderror" required>
+                                        <option value="">اختر نوع المستفيد</option>
+                                        <option value="deceased" {{ old('beneficiary_type',$order->beneficiary_type)==='deceased'?'selected':'' }}>متوفى</option>
+                                        <option value="sick"     {{ old('beneficiary_type',$order->beneficiary_type)==='sick'?'selected':'' }}>مريض</option>
+                                        <option value="elderly"  {{ old('beneficiary_type',$order->beneficiary_type)==='elderly'?'selected':'' }}>مسن</option>
+                                        <option value="disabled" {{ old('beneficiary_type',$order->beneficiary_type)==='disabled'?'selected':'' }}>معاق</option>
+                                    </select>
+                                </div>
+                                @error('beneficiary_type')<div class="hd-error-msg">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="hd-form-group">
+                                <label class="hd-label"><i class="fas fa-info-circle"></i> تفاصيل إضافية</label>
+                                <div class="hd-input-wrap">
+                                    <i class="hd-input-icon fas fa-info-circle"></i>
+                                    <textarea name="beneficiary_details" rows="2"
+                                              class="hd-input @error('beneficiary_details') hd-input--error @enderror"
+                                              placeholder="أي معلومات إضافية...">{{ old('beneficiary_details', $order->beneficiary_details) }}</textarea>
+                                </div>
+                                @error('beneficiary_details')<div class="hd-error-msg">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Actions --}}
+        <div class="col-12">
+            <div class="d-flex gap-2 flex-wrap">
+                <button type="submit" class="hd-btn hd-btn--primary hd-btn--lg">
+                    <i class="fas fa-save"></i> حفظ التغييرات
+                </button>
+                <a href="{{ route('orders.show', $order) }}" class="hd-btn hd-btn--secondary hd-btn--lg">
+                    <i class="fas fa-eye"></i> عرض الطلب
+                </a>
+                <a href="{{ route('orders.index') }}" class="hd-btn hd-btn--ghost">
+                    <i class="fas fa-times"></i> إلغاء
+                </a>
+            </div>
+        </div>
+
+    </div>
+</form>
+
 @endsection
