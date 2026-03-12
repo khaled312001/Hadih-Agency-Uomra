@@ -44,7 +44,7 @@ class AdminController extends Controller
 
         // إحصائيات الطلبات حسب الشهر (آخر 6 أشهر)
         $orders_by_month = Order::select(
-                DB::raw('strftime("%Y-%m", created_at) as month'),
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
                 DB::raw('count(*) as count')
             )
             ->where('created_at', '>=', Carbon::now()->subMonths(6))
@@ -56,7 +56,7 @@ class AdminController extends Controller
 
         // إحصائيات الإيرادات حسب الشهر
         $revenue_by_month = Payment::select(
-                DB::raw('strftime("%Y-%m", created_at) as month'),
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
                 DB::raw('sum(amount) as total')
             )
             ->where('status', 'completed')
