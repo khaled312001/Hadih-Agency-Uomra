@@ -5,9 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'لوحة تحكم الإدارة') - هدية</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link href="{{ asset('css/animations.css') }}" rel="stylesheet">
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -644,43 +643,27 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 991px) {
-            .sidebar {
-                transform: translateX(100%);
-            }
-
-            .sidebar.show {
-                transform: translateX(0);
-            }
-
-            .main-content {
-                margin-right: 0;
-            }
-
-            .sidebar-toggle {
-                display: flex;
-            }
-
-            .content-wrapper {
-                padding: 1rem;
-            }
-
-            .admin-topbar {
-                padding: 0.85rem 1rem;
-            }
+            .sidebar { transform: translateX(100%); }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-right: 0; }
+            .sidebar-toggle { display: flex; }
+            .content-wrapper { padding: 1rem; }
+            .admin-topbar { padding: 0.85rem 1rem; flex-wrap: wrap; gap: .5rem; }
+            .topbar-title h4 { font-size: 1.05rem; }
         }
 
         @media (max-width: 576px) {
-            .content-wrapper {
-                padding: 0.75rem;
-            }
+            .content-wrapper { padding: 0.75rem; }
+            .stats-number { font-size: 1.5rem; }
+            .topbar-title h4 { font-size: .95rem; }
+            .stats-card { padding: 1.1rem; }
+            .chart-card { padding: 1.1rem; }
+            .content-card-header { padding: 1rem 1.1rem; flex-wrap: wrap; gap: .5rem; }
+        }
 
-            .stats-number {
-                font-size: 1.5rem;
-            }
-
-            .topbar-title h4 {
-                font-size: 1rem;
-            }
+        @media (max-width: 400px) {
+            .admin-topbar { flex-direction: column; align-items: flex-start; }
+            .topbar-actions { width: 100%; justify-content: flex-end; }
         }
     </style>
 

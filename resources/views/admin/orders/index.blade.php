@@ -14,16 +14,21 @@
                     
                     <!-- Orders Table -->
                     <div class="content-card">
-                        <div class="p-4">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h5 class="mb-0">قائمة الطلبات</h5>
-                                <div class="d-flex align-items-center gap-2">
-                                    <span class="text-muted">إجمالي الطلبات: {{ $orders->total() }}</span>
-                                    <a href="{{ route('admin.orders.create') }}" class="btn btn-primary">
-                                        <i class="fas fa-plus me-2"></i>إضافة طلب جديد
-                                    </a>
+                        <div class="content-card-header">
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:36px;height:36px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div>
+                                    <h6 style="margin:0;font-weight:700;color:#1e293b;">قائمة الطلبات</h6>
+                                    <div style="font-size:.75rem;color:#94a3b8;">إجمالي: {{ $orders->total() }} طلب</div>
                                 </div>
                             </div>
+                            <a href="{{ route('admin.orders.create') }}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-plus"></i> طلب جديد
+                            </a>
+                        </div>
+                        <div class="p-0">
                             
                             <div class="table-responsive">
                                 <table class="table">
@@ -74,8 +79,16 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ $order->status == 'completed' ? 'success' : ($order->status == 'pending' ? 'warning' : 'info') }} px-3 py-2">
-                                                    {{ $order->status == 'completed' ? 'مكتمل' : ($order->status == 'pending' ? 'في الانتظار' : $order->status) }}
+                                                <span class="status-badge status-{{ $order->status }}">
+                                                    @switch($order->status)
+                                                        @case('pending')     <i class="fas fa-clock"></i> في الانتظار   @break
+                                                        @case('confirmed')   <i class="fas fa-check"></i> مؤكد          @break
+                                                        @case('assigned')    <i class="fas fa-user-check"></i> مُكلَّف   @break
+                                                        @case('in_progress') <i class="fas fa-spinner"></i> قيد التنفيذ  @break
+                                                        @case('completed')   <i class="fas fa-check-circle"></i> مكتمل  @break
+                                                        @case('cancelled')   <i class="fas fa-times-circle"></i> ملغي    @break
+                                                        @default {{ $order->status }}
+                                                    @endswitch
                                                 </span>
                                             </td>
                                             <td>

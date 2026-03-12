@@ -4,301 +4,248 @@
 @section('page-title', 'الرسائل')
 @section('page-description', 'تواصل مع فريق العمل ومتابعة المحادثات')
 
+@section('page-actions')
+<a href="{{ route('messages.create') }}" class="btn btn-primary btn-sm">
+    <i class="fas fa-plus"></i>
+    <span class="d-none d-sm-inline">رسالة جديدة</span>
+</a>
+@endsection
+
 @section('content')
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h3 class="mb-1 text-primary">
-                    <i class="fas fa-comments me-2"></i>الرسائل
-                </h3>
-                <p class="text-muted mb-0">تواصل مع فريق العمل ومتابعة المحادثات</p>
+
+@if($messages->count() > 0)
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-sm-4">
+            <div class="stat-card blue">
+                <div class="stat-icon blue"><i class="fas fa-envelope"></i></div>
+                <div class="stat-number">{{ $messages->count() }}</div>
+                <div class="stat-label">إجمالي الرسائل</div>
             </div>
-            <div class="d-flex gap-2">
-                <a href="{{ route('messages.create') }}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-plus me-2"></i>رسالة جديدة
-                </a>
-                <button class="btn btn-outline-primary btn-lg" onclick="refreshMessages()">
-                    <i class="fas fa-sync-alt me-2"></i>تحديث
-                </button>
+        </div>
+        <div class="col-6 col-sm-4">
+            <div class="stat-card orange">
+                <div class="stat-icon orange"><i class="fas fa-envelope-open-text"></i></div>
+                <div class="stat-number">{{ $messages->where('is_read', false)->count() }}</div>
+                <div class="stat-label">غير مقروءة</div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-4">
+            <div class="stat-card green">
+                <div class="stat-icon green"><i class="fas fa-paper-plane"></i></div>
+                <div class="stat-number">{{ $messages->where('sender_id', auth()->id())->count() }}</div>
+                <div class="stat-label">رسائل مرسلة</div>
             </div>
         </div>
     </div>
-</div>
 
-    @if($messages->count() > 0)
-        <!-- Stats Cards -->
-        <div class="row mb-4">
-            <div class="col-md-4 mb-3">
-                <div class="card bg-primary text-white h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-envelope fa-2x mb-2"></i>
-                        <h4 class="mb-1">{{ $messages->count() }}</h4>
-                        <small>إجمالي الرسائل</small>
-                    </div>
+    <!-- Messages List -->
+    <div class="content-card">
+        <div class="content-card-header">
+            <div class="d-flex align-items-center gap-2">
+                <div style="width:36px;height:36px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;">
+                    <i class="fas fa-inbox"></i>
                 </div>
+                <h6>صندوق الرسائل</h6>
             </div>
-            <div class="col-md-4 mb-3">
-                <div class="card bg-warning text-white h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-envelope-open fa-2x mb-2"></i>
-                        <h4 class="mb-1">{{ $messages->where('is_read', false)->count() }}</h4>
-                        <small>رسائل غير مقروءة</small>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card bg-success text-white h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-check-circle fa-2x mb-2"></i>
-                        <h4 class="mb-1">{{ $messages->where('is_read', true)->count() }}</h4>
-                        <small>رسائل مقروءة</small>
-                    </div>
-                </div>
+            <div class="d-flex align-items-center gap-2">
+                <select class="form-select form-select-sm" id="filterStatus" onchange="filterMessages()" style="width:auto;border-radius:8px;font-size:.82rem;">
+                    <option value="">جميع الرسائل</option>
+                    <option value="unread">غير مقروءة</option>
+                    <option value="read">مقروءة</option>
+                    <option value="sent">مرسلة</option>
+                </select>
+                <button class="btn btn-sm btn-outline-primary" onclick="location.reload()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
             </div>
         </div>
 
-        <!-- Messages List -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-white border-0">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">
-                                <i class="fas fa-list me-2 text-primary"></i>قائمة الرسائل
-                            </h5>
-                            <div class="d-flex gap-2">
-                                <select class="form-select form-select-sm" id="filterStatus" onchange="filterMessages()">
-                                    <option value="">جميع الرسائل</option>
-                                    <option value="unread">غير مقروءة</option>
-                                    <option value="read">مقروءة</option>
-                                    <option value="sent">مرسلة</option>
-                                </select>
+        <!-- Desktop Table -->
+        <div class="d-none d-md-block">
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>المحادثة</th>
+                            <th>الموضوع</th>
+                            <th>الطلب</th>
+                            <th>التاريخ</th>
+                            <th>الحالة</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($messages as $message)
+                        <tr class="message-row" style="{{ !$message->is_read && $message->receiver_id === auth()->id() ? 'background:rgba(245,158,11,.04);' : '' }}">
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    @if($message->sender_id === auth()->id())
+                                        <div style="width:36px;height:36px;background:linear-gradient(135deg,#11998e,#38ef7d);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;flex-shrink:0;">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight:700;font-size:.88rem;color:#166534;">أنت</div>
+                                            <div style="font-size:.75rem;color:#94a3b8;">إلى: {{ $message->receiver->name }}</div>
+                                        </div>
+                                    @else
+                                        <div style="width:36px;height:36px;background:linear-gradient(135deg,#667eea,#764ba2);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.85rem;flex-shrink:0;">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight:700;font-size:.88rem;color:#1e293b;">{{ $message->sender->name }}</div>
+                                            <div style="font-size:.75rem;color:#94a3b8;">إليك</div>
+                                        </div>
+                                    @endif
+                                </div>
+                            </td>
+                            <td>
+                                @if($message->subject)
+                                    <div style="font-weight:700;font-size:.875rem;color:#1e293b;margin-bottom:.15rem;">{{ $message->subject }}</div>
+                                @endif
+                                <div style="font-size:.82rem;color:#64748b;">{{ Str::limit($message->message, 55) }}</div>
+                            </td>
+                            <td>
+                                @if($message->order)
+                                    <span style="background:#eff6ff;color:#1e40af;border-radius:6px;padding:.25rem .7rem;font-size:.75rem;font-weight:700;">
+                                        {{ $message->order->order_number }}
+                                    </span>
+                                @else
+                                    <span style="color:#94a3b8;font-size:.82rem;">عام</span>
+                                @endif
+                            </td>
+                            <td style="color:#94a3b8;font-size:.8rem;white-space:nowrap;">
+                                <div>{{ $message->created_at->format('Y/m/d') }}</div>
+                                <div>{{ $message->created_at->format('H:i') }}</div>
+                            </td>
+                            <td>
+                                @if($message->receiver_id === auth()->id())
+                                    @if($message->is_read)
+                                        <span class="status-badge" style="background:#f0fdf4;color:#166534;">
+                                            <i class="fas fa-check-double"></i> مقروءة
+                                        </span>
+                                    @else
+                                        <span class="status-badge" style="background:#fffbeb;color:#92400e;">
+                                            <i class="fas fa-envelope"></i> غير مقروءة
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="status-badge" style="background:#eff6ff;color:#1e40af;">
+                                        <i class="fas fa-paper-plane"></i> مرسلة
+                                    </span>
+                                @endif
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="{{ route('messages.show', $message) }}" class="btn btn-sm btn-outline-primary" title="عرض">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    @if($message->sender_id === auth()->id())
+                                    <a href="{{ route('messages.edit', $message) }}" class="btn btn-sm btn-outline-warning" title="تعديل">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    @endif
+                                    <form method="POST" action="{{ route('messages.destroy', $message) }}" onsubmit="return confirm('هل أنت متأكد من حذف هذه الرسالة؟')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="حذف">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Mobile Cards -->
+        <div class="d-md-none p-3">
+            @foreach($messages as $message)
+            <div class="message-row" style="background:{{ !$message->is_read && $message->receiver_id === auth()->id() ? '#fffbeb' : '#f8fafc' }};border-radius:14px;padding:1rem;margin-bottom:.75rem;border:1px solid {{ !$message->is_read && $message->receiver_id === auth()->id() ? '#fde68a' : '#f1f5f9' }};">
+                <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width:34px;height:34px;background:{{ $message->sender_id===auth()->id() ? 'linear-gradient(135deg,#11998e,#38ef7d)' : 'linear-gradient(135deg,#667eea,#764ba2)' }};border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:.8rem;flex-shrink:0;">
+                            <i class="fas fa-{{ $message->sender_id===auth()->id() ? 'user' : 'building' }}"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:.88rem;color:#1e293b;">
+                                {{ $message->sender_id===auth()->id() ? 'أنت' : $message->sender->name }}
                             </div>
+                            <div style="font-size:.73rem;color:#94a3b8;">{{ $message->created_at->diffForHumans() }}</div>
                         </div>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th class="border-0">المرسل/المستقبل</th>
-                                        <th class="border-0">الرسالة</th>
-                                        <th class="border-0">الطلب</th>
-                                        <th class="border-0">التاريخ</th>
-                                        <th class="border-0">الحالة</th>
-                                        <th class="border-0">الإجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($messages as $message)
-                                        <tr class="message-row {{ !$message->is_read && $message->receiver_id === auth()->id() ? 'table-warning' : '' }}">
-                                            <td class="align-middle">
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar-sm me-3">
-                                                        @if($message->sender_id === auth()->id())
-                                                            <div class="avatar-title bg-success text-white rounded-circle">
-                                                                <i class="fas fa-user"></i>
-                                                            </div>
-                                                        @else
-                                                            <div class="avatar-title bg-primary text-white rounded-circle">
-                                                                <i class="fas fa-building"></i>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                    <div>
-                                                        @if($message->sender_id === auth()->id())
-                                                            <h6 class="mb-0 text-success">أنت</h6>
-                                                            <small class="text-muted">إلى: {{ $message->receiver->name }}</small>
-                                                        @else
-                                                            <h6 class="mb-0 text-primary">{{ $message->sender->name }}</h6>
-                                                            <small class="text-muted">إلى: أنت</small>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td class="align-middle">
-                                                <div class="message-preview">
-                                                    @if($message->subject)
-                                                        <h6 class="mb-1 text-dark">{{ $message->subject }}</h6>
-                                                    @endif
-                                                    <p class="mb-1 fw-bold">{{ Str::limit($message->message, 50) }}</p>
-                                                    <small class="text-muted">
-                                                        <i class="fas fa-{{ $message->type === 'text' ? 'font' : ($message->type === 'image' ? 'image' : ($message->type === 'video' ? 'video' : 'file')) }} me-1"></i>
-                                                        {{ ucfirst($message->type) }}
-                                                    </small>
-                                                </div>
-                                            </td>
-                                            <td class="align-middle">
-                                                @if($message->order)
-                                                    <span class="badge bg-info">
-                                                        {{ $message->order->order_number }}
-                                                    </span>
-                                                @else
-                                                    <span class="text-muted">عام</span>
-                                                @endif
-                                            </td>
-                                            <td class="align-middle">
-                                                <div>
-                                                    <small class="text-muted">{{ $message->created_at->format('Y-m-d') }}</small>
-                                                    <br>
-                                                    <small class="text-muted">{{ $message->created_at->format('H:i') }}</small>
-                                                </div>
-                                            </td>
-                                            <td class="align-middle">
-                                                @if($message->receiver_id === auth()->id())
-                                                    @if($message->is_read)
-                                                        <span class="badge bg-success">
-                                                            <i class="fas fa-check me-1"></i>مقروءة
-                                                        </span>
-                                                    @else
-                                                        <span class="badge bg-warning">
-                                                            <i class="fas fa-envelope me-1"></i>غير مقروءة
-                                                        </span>
-                                                    @endif
-                                                @else
-                                                    <span class="badge bg-primary">
-                                                        <i class="fas fa-paper-plane me-1"></i>مرسلة
-                                                    </span>
-                                                @endif
-                                            </td>
-                                            <td class="align-middle">
-                                                <div class="d-flex gap-1">
-                                                    <a href="{{ route('messages.show', $message) }}" class="btn btn-outline-primary btn-sm">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    @if($message->sender_id === auth()->id())
-                                                        <a href="{{ route('messages.edit', $message) }}" class="btn btn-outline-warning btn-sm">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                    @endif
-                                                    <form method="POST" action="{{ route('messages.destroy', $message) }}" class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذه الرسالة؟')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    @if($message->receiver_id === auth()->id())
+                        <span style="font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:50px;background:{{ $message->is_read ? '#f0fdf4' : '#fffbeb' }};color:{{ $message->is_read ? '#166534' : '#92400e' }};">
+                            {{ $message->is_read ? 'مقروءة' : 'غير مقروءة' }}
+                        </span>
+                    @else
+                        <span style="font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:50px;background:#eff6ff;color:#1e40af;">مرسلة</span>
+                    @endif
+                </div>
+                @if($message->subject)
+                    <div style="font-weight:700;font-size:.85rem;color:#1e293b;margin-bottom:.3rem;">{{ $message->subject }}</div>
+                @endif
+                <div style="font-size:.82rem;color:#64748b;margin-bottom:.75rem;">{{ Str::limit($message->message, 80) }}</div>
+                <div class="d-flex gap-2">
+                    <a href="{{ route('messages.show', $message) }}" class="btn btn-sm btn-outline-primary flex-fill">
+                        <i class="fas fa-eye me-1"></i> عرض
+                    </a>
+                    @if($message->sender_id === auth()->id())
+                    <a href="{{ route('messages.edit', $message) }}" class="btn btn-sm btn-outline-warning">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    @endif
+                    <form method="POST" action="{{ route('messages.destroy', $message) }}" onsubmit="return confirm('هل تريد حذف هذه الرسالة؟')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                    </form>
                 </div>
             </div>
+            @endforeach
         </div>
+    </div>
 
-        <!-- Pagination -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-center">
-                    {{ $messages->links() }}
-                </div>
-            </div>
-        </div>
-    @else
-        <!-- Empty State -->
-        <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center py-5">
-                        <div class="mb-4">
-                            <i class="fas fa-comments fa-4x text-muted"></i>
-                        </div>
-                        <h4 class="text-muted mb-3">لا توجد رسائل حالياً</h4>
-                        <p class="text-muted mb-4">ابدأ المحادثة مع فريق العمل</p>
-                        <a href="{{ route('messages.create') }}" class="btn btn-primary btn-lg">
-                            <i class="fas fa-plus me-2"></i>رسالة جديدة
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    @if($messages->hasPages())
+    <div class="d-flex justify-content-center mt-3">
+        {{ $messages->links() }}
+    </div>
     @endif
 
-<style>
-.message-row {
-    transition: all 0.3s ease;
-}
+@else
+    <!-- Empty State -->
+    <div class="row justify-content-center">
+        <div class="col-md-7 col-lg-5">
+            <div class="content-card">
+                <div class="content-card-body empty-state">
+                    <div class="empty-state-icon" style="width:90px;height:90px;background:linear-gradient(135deg,rgba(102,126,234,.1),rgba(118,75,162,.1));margin:0 auto 1.5rem;">
+                        <i class="fas fa-comments" style="font-size:2.2rem;color:#667eea;"></i>
+                    </div>
+                    <h4 style="font-weight:800;color:#1e293b;margin-bottom:.5rem;">لا توجد رسائل حالياً</h4>
+                    <p style="color:#94a3b8;font-size:.9rem;margin-bottom:1.75rem;">ابدأ المحادثة مع فريق الدعم وأحصل على المساعدة</p>
+                    <a href="{{ route('messages.create') }}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus-circle"></i> رسالة جديدة
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
 
-.message-row:hover {
-    background-color: rgba(0,123,255,0.05);
-}
+@endsection
 
-.avatar-sm {
-    width: 40px;
-    height: 40px;
-}
-
-.avatar-title {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.875rem;
-}
-
-.message-preview {
-    max-width: 300px;
-}
-
-.btn {
-    border-radius: 8px;
-    font-weight: 500;
-}
-
-.btn-outline-primary:hover,
-.btn-outline-warning:hover,
-.btn-outline-danger:hover {
-    transform: translateY(-1px);
-}
-
-.table th {
-    font-weight: 600;
-    color: #495057;
-}
-
-.badge {
-    font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
-}
-
-.card {
-    border-radius: 15px;
-}
-
-.card-header {
-    border-radius: 15px 15px 0 0 !important;
-}
-</style>
-
+@section('scripts')
 <script>
-function refreshMessages() {
-    location.reload();
-}
-
 function filterMessages() {
     const filter = document.getElementById('filterStatus').value;
-    const rows = document.querySelectorAll('.message-row');
-    
-    rows.forEach(row => {
+    document.querySelectorAll('.message-row').forEach(row => {
         let show = true;
-        
-        if (filter === 'unread') {
-            const statusBadge = row.querySelector('.badge');
-            show = statusBadge && statusBadge.textContent.includes('غير مقروءة');
-        } else if (filter === 'read') {
-            const statusBadge = row.querySelector('.badge');
-            show = statusBadge && statusBadge.textContent.includes('مقروءة');
-        } else if (filter === 'sent') {
-            const statusBadge = row.querySelector('.badge');
-            show = statusBadge && statusBadge.textContent.includes('مرسلة');
-        }
-        
+        const badges = row.querySelectorAll('[style*="color"]');
+        const text = row.innerText;
+        if      (filter === 'unread') show = text.includes('غير مقروءة');
+        else if (filter === 'read')   show = text.includes('مقروءة') && !text.includes('غير مقروءة');
+        else if (filter === 'sent')   show = text.includes('مرسلة');
         row.style.display = show ? '' : 'none';
     });
 }
