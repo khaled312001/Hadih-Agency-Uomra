@@ -150,13 +150,13 @@
 /* ===== CARDS ===== */
 .hd-card {
     background: var(--hd-surface);
-    border-radius: var(--hd-r-lg);
-    box-shadow: var(--hd-shadow-sm);
-    border: 1px solid rgba(0,0,0,.04);
+    border-radius: var(--hd-r-2xl);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    border: none;
     overflow: hidden;
     transition: var(--hd-ease-spring);
 }
-.hd-card:hover { box-shadow: var(--hd-shadow-md); }
+.hd-card:hover { box-shadow: 0 10px 30px rgba(0,0,0,0.06); transform: translateY(-2px); }
 .hd-card--flat { box-shadow: none; border: 1.5px solid var(--hd-border); }
 .hd-card--hover:hover { transform: translateY(-4px); box-shadow: var(--hd-shadow-lg); }
 
@@ -263,9 +263,9 @@
 /* ===== BADGES ===== */
 .hd-badge {
     display: inline-flex; align-items: center; gap: .3rem;
-    padding: .3rem .8rem;
+    padding: .35rem 1rem;
     border-radius: var(--hd-r-full);
-    font-size: .72rem; font-weight: 700;
+    font-size: .75rem; font-weight: 800;
     letter-spacing: .3px;
     white-space: nowrap;
 }
@@ -499,22 +499,23 @@
 .hd-timeline-time  { font-size: .75rem; color: var(--hd-text-muted); }
 
 /* ===== TABLES ===== */
-.hd-table-wrap { border-radius: var(--hd-r-lg); overflow: hidden; }
-.hd-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+.hd-table-wrap { border-radius: var(--hd-r-2xl); overflow: hidden; background: white; box-shadow: 0 4px 20px rgba(0,0,0,0.03); padding: 0.5rem; }
+.hd-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
 .hd-table th {
-    font-size: .72rem; font-weight: 800;
-    text-transform: uppercase; letter-spacing: .6px;
-    color: var(--hd-text-sub);
-    padding: .9rem 1.1rem;
-    background: #f8fafc;
-    border-bottom: 2px solid var(--hd-border);
+    font-size: .75rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--hd-text-muted);
+    padding: 1.25rem 1.1rem;
+    background: transparent;
+    border-bottom: 2px solid var(--hd-border-light);
     white-space: nowrap;
 }
 .hd-table td {
-    padding: .9rem 1.1rem;
+    padding: 1.25rem 1.1rem;
     border-bottom: 1px solid var(--hd-border-light);
     vertical-align: middle;
     color: #374151;
+    font-weight: 500;
 }
 .hd-table tbody tr:last-child td { border-bottom: none; }
 .hd-table tbody tr:hover { background: rgba(102,126,234,.03); }

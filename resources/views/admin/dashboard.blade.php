@@ -201,9 +201,9 @@
                                             <strong>{{ $package->name_ar }}</strong>
                                         </td>
                                         <td>
-                                            <span class="badge bg-primary badge-pulse">{{ $package->orders_count }}</span>
+                                            <span class="hd-badge hd-badge--primary">{{ $package->orders_count }}</span>
                                         </td>
-                                        <td>{{ number_format($package->price) }} ريال</td>
+                                        <td class="hd-gradient-text">{{ number_format($package->price) }} ريال</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -235,13 +235,14 @@
                                         <td>
                                             <strong>{{ $order->order_number }}</strong>
                                         </td>
-                                        <td>{{ $order->user->name }}</td>
+                                        <td>{{ $order->user->name ?? 'مستخدم محذوف' }}</td>
                                         <td>
-                                            <span class="status-badge status-{{ $order->status }}">
-                                                {{ $order->status }}
+                                            <span class="hd-badge hd-badge--{{ $order->status }}">
+                                                <span class="hd-badge__dot"></span>
+                                                {{ __('status.'.$order->status) ?? $order->status }}
                                             </span>
                                         </td>
-                                        <td>{{ number_format($order->total_amount) }} ريال</td>
+                                        <td style="font-weight: 700;">{{ number_format($order->total_amount) }} ريال</td>
                                     </tr>
                                     @endforeach
                                 </tbody>
