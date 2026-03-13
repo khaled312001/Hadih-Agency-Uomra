@@ -119,7 +119,7 @@
                 </div>
             </div>
             <div class="hd-form-section__body">
-                <form method="POST" action="{{ route('admin.settings.payment') }}">
+                <form method="POST" action="{{ route('admin.settings.update') }}">
                     @csrf @method('PUT')
 
                     <div class="hd-form-group">
@@ -141,9 +141,9 @@
                         <div class="hd-input-wrap">
                             <i class="hd-input-icon fas fa-coins"></i>
                             <select name="default_currency" class="hd-input hd-select">
-                                <option value="SAR" selected>ريال سعودي (SAR)</option>
-                                <option value="USD">دولار أمريكي (USD)</option>
-                                <option value="EUR">يورو (EUR)</option>
+                                <option value="SAR" {{ ($settings['default_currency'] ?? 'SAR') == 'SAR' ? 'selected' : '' }}>ريال سعودي (SAR)</option>
+                                <option value="USD" {{ ($settings['default_currency'] ?? 'SAR') == 'USD' ? 'selected' : '' }}>دولار أمريكي (USD)</option>
+                                <option value="EUR" {{ ($settings['default_currency'] ?? 'SAR') == 'EUR' ? 'selected' : '' }}>يورو (EUR)</option>
                             </select>
                         </div>
                     </div>
@@ -180,7 +180,7 @@
                 </div>
             </div>
             <div class="hd-form-section__body">
-                <form method="POST" action="{{ route('admin.settings.email') }}">
+                <form method="POST" action="{{ route('admin.settings.update') }}">
                     @csrf @method('PUT')
 
                     <div class="row g-3">
@@ -257,7 +257,7 @@
                 </div>
             </div>
             <div class="hd-form-section__body">
-                <form method="POST" action="{{ route('admin.settings.system') }}">
+                <form method="POST" action="{{ route('admin.settings.update') }}">
                     @csrf @method('PUT')
 
                     <div class="row g-3 mb-3">

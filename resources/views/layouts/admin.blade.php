@@ -23,7 +23,7 @@
         /* ===== SIDEBAR ===== */
         .sidebar {
             background: linear-gradient(180deg, #11101d 0%, #1d1b31 100%); /* Deeper rich dark */
-            min-height: 100vh;
+            height: 100vh; /* Fixed height for scrolling */
             color: white;
             position: fixed;
             top: 0;
@@ -32,7 +32,23 @@
             z-index: 1040;
             box-shadow: -4px 0 25px rgba(0,0,0,0.1);
             overflow-y: auto;
+            overflow-x: hidden;
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Custom Scrollbar for Sidebar */
+        .sidebar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         .sidebar-brand {
@@ -71,15 +87,15 @@
 
         .sidebar .nav-link {
             color: rgba(255,255,255,0.6);
-            padding: 0.85rem 1.25rem;
-            border-radius: 12px;
-            margin: 4px 1rem;
+            padding: 0.7rem 1.1rem; /* Reduced padding */
+            border-radius: 10px; /* Slightly smaller radius */
+            margin: 2px 0.75rem; /* Reduced margin */
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.95rem;
+            font-size: 0.88rem; /* Slightly smaller font */
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.65rem;
         }
 
         .sidebar .nav-link i {

@@ -1048,9 +1048,12 @@
     transform: translateY(-2px);
 }
 
-.page-link svg {
-    width: 1.2rem;
-    height: 1.2rem;
+.page-link svg,
+.pagination svg {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .pagination-info {

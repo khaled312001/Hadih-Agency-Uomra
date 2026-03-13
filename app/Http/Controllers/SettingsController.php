@@ -20,34 +20,26 @@ class SettingsController extends Controller
 
     public function update(Request $request)
     {
-        $request->validate([
-            'site_name' => 'required|string|max:255',
-            'site_description' => 'nullable|string',
-            'contact_email' => 'required|email',
-            'contact_phone' => 'required|string|max:20',
-            'meta_keywords' => 'nullable|string',
-            'meta_description' => 'nullable|string',
-            'facebook_url' => 'nullable|url',
-            'twitter_url' => 'nullable|url',
-            'instagram_url' => 'nullable|url',
-            'registration_enabled' => 'boolean',
-            'maintenance_mode' => 'boolean',
-        ]);
-
-        $settings = [
-            'site_name' => $request->site_name,
-            'site_description' => $request->site_description,
-            'contact_email' => $request->contact_email,
-            'contact_phone' => $request->contact_phone,
-            'meta_keywords' => $request->meta_keywords,
-            'meta_description' => $request->meta_description,
-            'facebook_url' => $request->facebook_url,
-            'twitter_url' => $request->twitter_url,
-            'instagram_url' => $request->instagram_url,
-            'registration_enabled' => $request->has('registration_enabled'),
-            'maintenance_mode' => $request->has('maintenance_mode'),
-            'updated_at' => now(),
+        // Get existing settings to preserve fields not in this specific request
+        $existingSettings = $this->getSettings();
+        
+        // Dynamic validation based on what's in the request
+        $data = $request->except(['_token', '_method']);
+        
+        // Handle checkboxes (boolean values)
+        $checkboxes = [
+            'registration_enabled', 'maintenance_mode', 
+            'payment_enabled', 'email_enabled'
         ];
+        
+        foreach ($checkboxes as $checkbox) {
+            if ($request->hasAny(['site_name', 'payment_enabled', 'registration_enabled'])) { // Check if we are in a section that has checkboxes
+                $data[$checkbox] = $request->has($checkbox);
+            }
+        }
+
+        $settings = array_merge($existingSettings, $data);
+        $settings['updated_at'] = now()->toDateTimeString();
 
         $this->saveSettings($settings);
 
@@ -69,11 +61,23 @@ class SettingsController extends Controller
             'instagram_url' => '',
             'registration_enabled' => true,
             'maintenance_mode' => false,
+            // Payment
+            'payment_enabled' => true,
+            'default_currency' => 'SAR',
+            'payment_methods' => ['visa', 'mastercard', 'mada'],
+            // Email
+            'email_enabled' => false,
+            'smtp_host' => 'smtp.gmail.com',
+            'smtp_port' => '587',
+            'smtp_username' => '',
+            // System
+            'max_orders_per_user' => 10,
+            'order_expiry_days' => 30,
         ];
 
         if (Storage::exists('settings.json')) {
             $savedSettings = json_decode(Storage::get('settings.json'), true);
-            return array_merge($defaultSettings, $savedSettings);
+            return array_merge($defaultSettings, is_array($savedSettings) ? $savedSettings : []);
         }
 
         return $defaultSettings;
