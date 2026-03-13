@@ -169,6 +169,62 @@
         </div>
     </div>
 
+    {{-- MyFatoorah API Settings --}}
+    <div class="col-lg-6">
+        <div class="hd-form-section h-100">
+            <div class="hd-form-section__header" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                <div class="hd-form-section__header-icon"><i class="fas fa-key"></i></div>
+                <div>
+                    <div class="hd-form-section__header-title">إعدادات MyFatoorah</div>
+                    <div style="font-size:.75rem;color:rgba(255,255,255,.75);">إعدادات بوابة الدفع (ماي فاتورة)</div>
+                </div>
+            </div>
+            <div class="hd-form-section__body">
+                <form method="POST" action="{{ route('admin.settings.update') }}">
+                    @csrf @method('PUT')
+
+                    <div class="hd-form-group">
+                        <label class="hd-label"><i class="fas fa-shield-alt"></i> API Token</label>
+                        <div class="hd-input-wrap">
+                            <i class="hd-input-icon fas fa-shield-alt"></i>
+                            <input type="password" id="myfatoorahToken" name="myfatoorah_token" class="hd-input hd-input--with-action"
+                                   value="{{ env('MYFATOORAH_TOKEN') }}" placeholder="أدخل رمز الـ API">
+                            <i class="hd-input-action fas fa-eye" onclick="togglePass('myfatoorahToken',this)"></i>
+                        </div>
+                    </div>
+
+                    <div class="hd-form-group">
+                        <label class="hd-label"><i class="fas fa-link"></i> Base URL</label>
+                        <div class="hd-input-wrap">
+                            <i class="hd-input-icon fas fa-link"></i>
+                            <select name="myfatoorah_base_url" class="hd-input hd-select">
+                                <option value="https://apitest.myfatoorah.com" {{ env('MYFATOORAH_BASE_URL') == 'https://apitest.myfatoorah.com' ? 'selected' : '' }}>Sandbox (تجريبي)</option>
+                                <option value="https://api.myfatoorah.com" {{ env('MYFATOORAH_BASE_URL') == 'https://api.myfatoorah.com' ? 'selected' : '' }}>Live (حقيقي)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="hd-form-group mb-0">
+                        <label style="display:flex;align-items:center;gap:.75rem;cursor:pointer;padding:.75rem 1rem;border-radius:12px;background:#fef2f2;border:1px solid #fee2e2;">
+                            <input type="checkbox" name="myfatoorah_is_live" id="myfatoorah_is_live" {{ env('MYFATOORAH_IS_LIVE') ? 'checked' : '' }}
+                                   style="width:1.1rem;height:1.1rem;accent-color:#ef4444;">
+                            <div>
+                                <div style="font-weight:700;font-size:.875rem;color:#991b1b;">وضع التشغيل المباشر (LIVE)</div>
+                                <div style="font-size:.75rem;color:#b91c1c;">تفعيل استقبال المدفوعات الحقيقية</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="mt-3">
+                        <button type="submit" class="hd-btn hd-btn--primary">
+                            <i class="fas fa-save"></i> حفظ إعدادات الـ API
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     {{-- Email Settings --}}
     <div class="col-lg-6">
         <div class="hd-form-section h-100">

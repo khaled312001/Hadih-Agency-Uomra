@@ -19,8 +19,11 @@ class OrderPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Order $order): bool
+    public function view(?User $user, Order $order): bool
     {
+        if (!$user) {
+            return session()->has('guest_orders') && in_array($order->id, session('guest_orders'));
+        }
         return $user->role === 'admin' || 
                $order->user_id === $user->id;
     }

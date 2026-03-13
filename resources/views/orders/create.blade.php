@@ -71,6 +71,60 @@
             </div>
         </div>
 
+        {{-- Customer Info (Only for Guests) --}}
+        @guest
+        <div class="col-12">
+            <div class="hd-form-section">
+                <div class="hd-form-section__header" style="background:linear-gradient(135deg,#6366f1,#4f46e5);">
+                    <div class="hd-form-section__header-icon">
+                        <i class="fas fa-user-tag"></i>
+                    </div>
+                    <div>
+                        <div class="hd-form-section__header-title">معلومات مقدم الطلب</div>
+                        <div style="font-size:.75rem;color:rgba(255,255,255,.75);">أدخل بياناتك للتواصل معك بخصوص الطلب</div>
+                    </div>
+                </div>
+                <div class="hd-form-section__body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="hd-form-group">
+                                <label class="hd-label hd-label--required"><i class="fas fa-user"></i> اسمك الكامل</label>
+                                <div class="hd-input-wrap">
+                                    <i class="hd-input-icon fas fa-user"></i>
+                                    <input type="text" name="customer_name" class="hd-input @error('customer_name') hd-input--error @enderror"
+                                           value="{{ old('customer_name') }}" placeholder="أدخل اسمك الكامل" required>
+                                </div>
+                                @error('customer_name')<div class="hd-error-msg">{{ $message }}</div>@error
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="hd-form-group">
+                                <label class="hd-label hd-label--required"><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
+                                <div class="hd-input-wrap">
+                                    <i class="hd-input-icon fas fa-envelope"></i>
+                                    <input type="email" name="customer_email" class="hd-input @error('customer_email') hd-input--error @enderror"
+                                           value="{{ old('customer_email') }}" placeholder="email@example.com" required>
+                                </div>
+                                @error('customer_email')<div class="hd-error-msg">{{ $message }}</div>@error
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="hd-form-group">
+                                <label class="hd-label hd-label--required"><i class="fas fa-phone"></i> رقم الجوال</label>
+                                <div class="hd-input-wrap">
+                                    <i class="hd-input-icon fas fa-phone"></i>
+                                    <input type="tel" name="customer_phone" class="hd-input @error('customer_phone') hd-input--error @enderror"
+                                           value="{{ old('customer_phone') }}" placeholder="رقم الجوال" required>
+                                </div>
+                                @error('customer_phone')<div class="hd-error-msg">{{ $message }}</div>@error
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endguest
+
         {{-- Beneficiary Info --}}
         <div class="col-12">
             <div class="hd-form-section">

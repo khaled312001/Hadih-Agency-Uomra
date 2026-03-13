@@ -23,6 +23,16 @@ class SettingsController extends Controller
         // Get existing settings to preserve fields not in this specific request
         $existingSettings = $this->getSettings();
         
+        // Handle MyFatoorah .env updates
+        if ($request->has('myfatoorah_token')) {
+            $this->setEnv('MYFATOORAH_TOKEN', $request->myfatoorah_token);
+            $this->setEnv('MYFATOORAH_BASE_URL', $request->myfatoorah_base_url);
+            $this->setEnv('MYFATOORAH_IS_LIVE', $request->has('myfatoorah_is_live') ? 'true' : 'false');
+            
+            return redirect()->route('admin.settings.index')
+                ->with('success', 'تم تحديث إعدادات ماي فاتورة بنجاح');
+        }
+
         // Dynamic validation based on what's in the request
         $data = $request->except(['_token', '_method']);
         
@@ -45,6 +55,24 @@ class SettingsController extends Controller
 
         return redirect()->route('admin.settings.index')
             ->with('success', 'تم حفظ الإعدادات بنجاح');
+    }
+
+    private function setEnv($key, $value)
+    {
+        $path = base_path('.env');
+        if (file_exists($path)) {
+            $content = file_get_contents($path);
+            
+            // If key exists, replace it, otherwise append
+            if (strpos($content, "$key=") !== false) {
+                // Use regex to replace the value, handling quoted values
+                $content = preg_replace("/^$key=.*$/m", "$key=\"$value\"", $content);
+            } else {
+                $content .= "\n$key=\"$value\"";
+            }
+            
+            file_put_contents($path, $content);
+        }
     }
 
     private function getSettings()

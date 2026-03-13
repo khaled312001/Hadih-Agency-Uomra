@@ -12,7 +12,12 @@ class OrderController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        // Middleware is now handled in web.php for specific routes
+    }
+
+    protected function getPaymentService()
+    {
+        return new \App\Services\MyFatoorahService();
     }
 
     public function index()
@@ -51,6 +56,9 @@ class OrderController extends Controller
         $request->validate([
             'umrah_package_id' => 'required|exists:umrah_packages,id',
             'user_id' => 'nullable|exists:users,id',
+            'customer_name' => auth()->check() ? 'nullable|string|max:255' : 'required|string|max:255',
+            'customer_email' => auth()->check() ? 'nullable|email' : 'required|email',
+            'customer_phone' => auth()->check() ? 'nullable|string|max:20' : 'required|string|max:20',
             'beneficiary_name' => 'required|string|max:255',
             'beneficiary_phone' => 'required|string|max:20',
             'whatsapp_country_code' => 'required|string|max:5',
@@ -70,6 +78,9 @@ class OrderController extends Controller
         $order = Order::create([
             'order_number' => $this->generateOrderNumber(),
             'user_id' => $userId,
+            'customer_name' => $request->customer_name ?? (auth()->check() ? auth()->user()->name : null),
+            'customer_email' => $request->customer_email ?? (auth()->check() ? auth()->user()->email : null),
+            'customer_phone' => $request->customer_phone ?? (auth()->check() ? auth()->user()->phone : null),
             'umrah_package_id' => $package->id,
             'beneficiary_name' => $request->beneficiary_name,
             'beneficiary_phone' => $request->beneficiary_phone,
@@ -84,23 +95,91 @@ class OrderController extends Controller
             'notes' => $request->notes,
         ]);
 
-        // Create payment record
-        Payment::create([
+        // Initialize payment record
+        $paymentRecord = Payment::create([
             'order_id' => $order->id,
-            'payment_id' => 'PAY-' . Str::random(10),
+            'payment_id' => 'INIT-' . Str::random(10),
             'amount' => $package->price,
             'currency' => $package->currency,
             'status' => 'pending',
         ]);
 
-        // Redirect based on request type
+        // If guest checkout, store order number in session to allow them to view it later
+        if (!auth()->check()) {
+            session()->push('guest_orders', $order->id);
+        }
+
+        // MyFatoorah Integration
+        $paymentData = [
+            'CustomerName'       => $order->customer_name ?? 'Guest',
+            'NotificationOption' => 'LNK',
+            'InvoiceValue'       => $order->total_amount,
+            'DisplayCurrencyIso' => $order->currency,
+            'CallBackUrl'        => route('orders.payment.callback'),
+            'ErrorUrl'           => route('orders.payment.error'),
+            'Language'           => 'ar',
+            'CustomerEmail'      => $order->customer_email,
+            'CustomerMobile'     => $order->customer_phone,
+            'CustomerReference'  => $order->order_number,
+            'SourceInfo'         => 'Laravel ' . app()->version(),
+        ];
+
+        $paymentService = $this->getPaymentService();
+        $paymentResponse = $paymentService->executePayment($paymentData);
+
+        if (isset($paymentResponse['IsSuccess']) && $paymentResponse['IsSuccess']) {
+            $paymentUrl = $paymentResponse['Data']['PaymentURL'];
+            $invoiceId = $paymentResponse['Data']['InvoiceId'];
+            
+            $paymentRecord->update(['payment_id' => $invoiceId]);
+            
+            return redirect()->away($paymentUrl);
+        }
+
+        // Redirect based on request type if payment initiation fails
         if (request()->is('admin/*')) {
             return redirect()->route('admin.orders.show', $order)
-                ->with('success', 'تم إنشاء الطلب بنجاح');
+                ->with('error', 'حدث خطأ في بوابة الدفع: ' . ($paymentResponse['Message'] ?? 'خطأ غير معروف'));
         }
 
         return redirect()->route('orders.show', $order)
-            ->with('success', 'تم إنشاء الطلب بنجاح');
+            ->with('error', 'حدث خطأ في بوابة الدفع: ' . ($paymentResponse['Message'] ?? 'خطأ غير معروف'));
+    }
+
+    public function handlePaymentCallback(Request $request)
+    {
+        $paymentId = $request->paymentId;
+        $paymentService = $this->getPaymentService();
+        $statusResponse = $paymentService->getPaymentStatus($paymentId);
+
+        if (isset($statusResponse['IsSuccess']) && $statusResponse['IsSuccess']) {
+            $statusData = $statusResponse['Data'];
+            $orderNumber = $statusData['CustomerReference'];
+            $order = Order::where('order_number', $orderNumber)->first();
+
+            if ($order) {
+                if ($statusData['InvoiceStatus'] === 'Paid') {
+                    $order->update(['status' => 'confirmed']);
+                    $order->payments()->where('payment_id', $statusData['InvoiceId'])->update([
+                        'status' => 'completed',
+                        'paid_at' => now(),
+                        'gateway_response' => $statusData
+                    ]);
+
+                    return redirect()->route((auth()->check() ? 'dashboard' : 'welcome'))
+                        ->with('success', 'تم دفع الطلب بنجاح وهو الآن قيد التأكيد');
+                }
+            }
+        }
+
+        return redirect()->route('orders.payment.error')
+            ->with('error', 'فشلت عملية الدفع أو لم تكتمل');
+    }
+
+    public function handlePaymentError(Request $request)
+    {
+        return redirect()->route((auth()->check() ? 'dashboard' : 'welcome'))
+            ->with('error', 'حدث خطأ أثناء عملية الدفع. يرجى المحاولة مرة أخرى');
     }
 
     public function show(Order $order)

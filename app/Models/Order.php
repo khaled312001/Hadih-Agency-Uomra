@@ -12,6 +12,9 @@ class Order extends Model
     protected $fillable = [
         'order_number',
         'user_id',
+        'customer_name',
+        'customer_email',
+        'customer_phone',
         'umrah_package_id',
         'beneficiary_name',
         'beneficiary_phone',
