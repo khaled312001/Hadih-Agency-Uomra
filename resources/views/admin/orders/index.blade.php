@@ -52,18 +52,24 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
-                                                        <i class="fas fa-user"></i>
+                                                    <div class="bg-{{ $order->user ? 'primary' : 'secondary' }} text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                                        <i class="fas fa-{{ $order->user ? 'user' : 'user-secret' }}"></i>
                                                     </div>
                                                     <div>
-                                                        <div class="fw-bold">{{ $order->user->name }}</div>
-                                                        <small class="text-muted">{{ $order->user->email }}</small>
+                                                        @if($order->user)
+                                                            <div class="fw-bold">{{ $order->user->name }}</div>
+                                                            <small class="text-muted">{{ $order->user->email }}</small>
+                                                        @else
+                                                            <div class="fw-bold">{{ $order->customer_name ?? 'زائر' }}</div>
+                                                            <small class="text-muted">{{ $order->customer_email ?? 'بدون بريد' }}</small>
+                                                            <span class="badge bg-light text-dark border ms-1" style="font-size: .65rem;">طلب زائر</span>
+                                                        @endif
                                                     </div>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="fw-bold">{{ $order->umrahPackage->name_ar }}</div>
-                                                <small class="text-muted">{{ $order->umrahPackage->duration }}</small>
+                                                <div class="fw-bold">{{ $order->umrahPackage ? $order->umrahPackage->name_ar : 'حزمة غير متوفرة' }}</div>
+                                                <small class="text-muted">{{ $order->umrahPackage->duration ?? '' }}</small>
                                             </td>
                                             <td>
                                                 <div class="fw-bold">{{ $order->beneficiary_name }}</div>

@@ -93,10 +93,10 @@
                         </div>
                         <div style="flex:1;min-width:0;">
                             <div style="font-size:.75rem;color:#166534;font-weight:600;text-transform:uppercase;letter-spacing:.4px;">الحزمة</div>
-                            <div style="font-weight:700;color:#1e293b;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $order->umrahPackage->name_ar ?? 'غير محدد' }}</div>
+                            <div style="font-weight:700;color:#1e293b;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ $order->umrahPackage ? $order->umrahPackage->name_ar : 'غير محدد' }}</div>
                             <div class="d-flex align-items-center justify-content-between mt-1">
                                 <span style="font-weight:800;color:#059669;font-size:.95rem;">{{ number_format($order->total_amount) }} <small style="font-size:.7rem;font-weight:600;">{{ $order->currency ?? 'SAR' }}</small></span>
-                                @if($order->umrahPackage->duration ?? false)
+                                @if($order->umrahPackage && $order->umrahPackage->duration)
                                     <span style="font-size:.75rem;color:#94a3b8;"><i class="fas fa-clock me-1"></i>{{ $order->umrahPackage->duration }}</span>
                                 @endif
                             </div>

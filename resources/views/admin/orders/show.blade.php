@@ -29,12 +29,18 @@
                                 <td><strong>{{ $order->order_number }}</strong></td>
                             </tr>
                             <tr>
-                                <th>المستخدم:</th>
-                                <td>{{ $order->user->name }}</td>
+                                <th>المشتري:</th>
+                                <td>
+                                    @if($order->user)
+                                        <span class="badge bg-primary">مستخدم مسجل</span> {{ $order->user->name }}
+                                    @else
+                                        <span class="badge bg-secondary">زائر</span> {{ $order->customer_name }}
+                                    @endif
+                                </td>
                             </tr>
                             <tr>
                                 <th>الحزمة:</th>
-                                <td>{{ $order->umrahPackage->name_ar }}</td>
+                                <td>{{ $order->umrahPackage ? $order->umrahPackage->name_ar : 'حزمة غير متوفرة' }}</td>
                             </tr>
                             <tr>
                                 <th>المستفيد:</th>
@@ -139,14 +145,21 @@
                     </h5>
                     <div class="text-center">
                         <div class="mb-3">
-                            <i class="fas fa-user-circle fa-3x text-muted"></i>
+                            <i class="fas fa-{{ $order->user ? 'user-circle' : 'user-secret' }} fa-3x text-muted"></i>
                         </div>
-                        <h6>{{ $order->user->name }}</h6>
-                        <p class="text-muted mb-2">{{ $order->user->email }}</p>
-                        <p class="text-muted mb-3">{{ $order->user->phone }}</p>
-                        <a href="{{ route('admin.users.show', $order->user) }}" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-eye me-1"></i>عرض الملف الشخصي
-                        </a>
+                        @if($order->user)
+                            <h6>{{ $order->user->name }}</h6>
+                            <p class="text-muted mb-2">{{ $order->user->email }}</p>
+                            <p class="text-muted mb-3">{{ $order->user->phone }}</p>
+                            <a href="{{ route('admin.users.show', $order->user) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>عرض الملف الشخصي
+                            </a>
+                        @else
+                            <h6>{{ $order->customer_name }}</h6>
+                            <p class="text-muted mb-2">{{ $order->customer_email }}</p>
+                            <p class="text-muted mb-3">{{ $order->customer_phone }}</p>
+                            <span class="badge bg-light text-dark border">طلب كزائر</span>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -157,14 +170,19 @@
                         <i class="fas fa-box me-2 text-primary"></i>معلومات الحزمة
                     </h5>
                     <div class="text-center">
-                        <h6>{{ $order->umrahPackage->name_ar }}</h6>
-                        <p class="text-muted mb-2">{{ $order->umrahPackage->duration ?? 'غير محدد' }}</p>
-                        <p class="text-success fw-bold mb-3">
-                            {{ number_format($order->umrahPackage->price, 2) }} {{ $order->umrahPackage->currency }}
-                        </p>
-                        <a href="{{ route('admin.packages.show', $order->umrahPackage) }}" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-eye me-1"></i>عرض الحزمة
-                        </a>
+                        @if($order->umrahPackage)
+                            <h6>{{ $order->umrahPackage->name_ar }}</h6>
+                            <p class="text-muted mb-2">{{ $order->umrahPackage->duration ?? 'غير محدد' }}</p>
+                            <p class="text-success fw-bold mb-3">
+                                {{ number_format($order->umrahPackage->price, 2) }} {{ $order->umrahPackage->currency }}
+                            </p>
+                            <a href="{{ route('admin.packages.show', $order->umrahPackage) }}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>عرض الحزمة
+                            </a>
+                        @else
+                            <h6 class="text-muted">الحزمة غير متوفرة</h6>
+                            <p class="small text-danger">ربما تم حذف هذه الحزمة</p>
+                        @endif
                     </div>
                 </div>
             </div>

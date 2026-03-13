@@ -112,12 +112,8 @@
             </div>
             <div class="hd-info-grid">
                 <div class="hd-info-row">
-                    <div class="hd-info-row__key">رقم الطلب</div>
-                    <div class="hd-info-row__val"><strong style="color:var(--hd-primary);">{{ $order->order_number }}</strong></div>
-                </div>
-                <div class="hd-info-row">
                     <div class="hd-info-row__key">الحزمة</div>
-                    <div class="hd-info-row__val">{{ $order->umrahPackage->name_ar }}</div>
+                    <div class="hd-info-row__val">{{ $order->umrahPackage ? $order->umrahPackage->name_ar : 'حزمة غير متوفرة' }}</div>
                 </div>
                 <div class="hd-info-row">
                     <div class="hd-info-row__key">المستفيد</div>
@@ -250,24 +246,31 @@
                 </div>
             </div>
             <div class="hd-card-body text-center">
-                @if($order->umrahPackage->image)
-                    <img src="{{ asset('storage/'.$order->umrahPackage->image) }}" alt="{{ $order->umrahPackage->name_ar }}"
-                         style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem;">
-                @else
-                    <div style="width:100%;height:120px;background:var(--hd-grad-primary);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
-                        <i class="fas fa-kaaba" style="font-size:2.5rem;color:rgba(255,255,255,.6);"></i>
+                @if($order->umrahPackage)
+                    @if($order->umrahPackage->image)
+                        <img src="{{ asset('storage/'.$order->umrahPackage->image) }}" alt="{{ $order->umrahPackage->name_ar }}"
+                             style="width:100%;height:140px;object-fit:cover;border-radius:12px;margin-bottom:1rem;">
+                    @else
+                        <div style="width:100%;height:120px;background:var(--hd-grad-primary);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                            <i class="fas fa-kaaba" style="font-size:2.5rem;color:rgba(255,255,255,.6);"></i>
+                        </div>
+                    @endif
+                    <div style="font-size:1rem;font-weight:800;color:#1e293b;margin-bottom:.4rem;">{{ $order->umrahPackage->name_ar }}</div>
+                    @if($order->umrahPackage->description_ar)
+                        <div style="font-size:.82rem;color:#64748b;margin-bottom:.65rem;">{{ Str::limit($order->umrahPackage->description_ar,90) }}</div>
+                    @endif
+                    @if($order->umrahPackage->duration)
+                        <span class="hd-tag hd-tag--primary mb-2"><i class="fas fa-clock"></i> {{ $order->umrahPackage->duration }}</span><br>
+                    @endif
+                    <div style="font-size:1.25rem;font-weight:900;color:var(--hd-primary);margin-top:.5rem;">
+                        {{ number_format($order->umrahPackage->price,2) }} {{ $order->umrahPackage->currency }}
                     </div>
+                @else
+                    <div style="width:100%;height:120px;background:#f1f5f9;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                        <i class="fas fa-box" style="font-size:2.5rem;color:#94a3b8;"></i>
+                    </div>
+                    <div class="text-muted">الحزمة غير متوفرة حالياً</div>
                 @endif
-                <div style="font-size:1rem;font-weight:800;color:#1e293b;margin-bottom:.4rem;">{{ $order->umrahPackage->name_ar }}</div>
-                @if($order->umrahPackage->description_ar)
-                    <div style="font-size:.82rem;color:#64748b;margin-bottom:.65rem;">{{ Str::limit($order->umrahPackage->description_ar,90) }}</div>
-                @endif
-                @if($order->umrahPackage->duration)
-                    <span class="hd-tag hd-tag--primary mb-2"><i class="fas fa-clock"></i> {{ $order->umrahPackage->duration }}</span><br>
-                @endif
-                <div style="font-size:1.25rem;font-weight:900;color:var(--hd-primary);margin-top:.5rem;">
-                    {{ number_format($order->umrahPackage->price,2) }} {{ $order->umrahPackage->currency }}
-                </div>
             </div>
         </div>
 
