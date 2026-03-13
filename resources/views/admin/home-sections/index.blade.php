@@ -42,10 +42,10 @@
                     </td>
                     <td>
                         <div class="btn-group">
-                            <a href="{{ route('admin.home-sections.edit', ['home_section' => $section->id]) }}" class="btn btn-sm btn-outline-primary">
+                            <a href="{{ route('admin.home-sections.edit', ['section' => $section->id]) }}" class="btn btn-sm btn-outline-primary">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <form action="{{ route('admin.home-sections.destroy', ['home_section' => $section->id]) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من الحذف؟')">
+                            <form action="{{ route('admin.home-sections.destroy', ['section' => $section->id]) }}" method="POST" onsubmit="return confirm('هل أنت متأكد من الحذف؟')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-outline-danger">

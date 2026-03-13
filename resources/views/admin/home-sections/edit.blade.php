@@ -13,7 +13,7 @@
         </a>
     </div>
     <div class="card-body p-4">
-        <form action="{{ route('admin.home-sections.update', ['home_section' => $homePageSection->id]) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.home-sections.update', ['section' => $homePageSection->id]) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             

@@ -82,7 +82,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password');
 
         // Home Page Sections
-        Route::resource('home-sections', HomePageSectionController::class);
+        Route::resource('home-sections', HomePageSectionController::class)->parameters([
+            'home-sections' => 'section'
+        ]);
         Route::post('home-sections/update-order', [HomePageSectionController::class, 'updateOrder'])->name('home-sections.update-order');
     });
 });

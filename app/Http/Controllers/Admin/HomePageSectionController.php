@@ -50,12 +50,12 @@ class HomePageSectionController extends Controller
         return redirect()->route('admin.home-sections.index')->with('success', 'تم إضافة القسم بنجاح');
     }
 
-    public function edit(HomePageSection $homePageSection)
+    public function edit(HomePageSection $section)
     {
-        return view('admin.home-sections.edit', compact('homePageSection'));
+        return view('admin.home-sections.edit', ['homePageSection' => $section]);
     }
 
-    public function update(Request $request, HomePageSection $homePageSection)
+    public function update(Request $request, HomePageSection $section)
     {
         $validated = $request->validate([
             'title_ar' => 'nullable|string|max:255',
@@ -74,24 +74,24 @@ class HomePageSectionController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            if ($homePageSection->image) {
-                Storage::disk('public')->delete($homePageSection->image);
+            if ($section->image) {
+                Storage::disk('public')->delete($section->image);
             }
             $path = $request->file('image')->store('home-sections', 'public');
             $validated['image'] = $path;
         }
 
-        $homePageSection->update($validated);
+        $section->update($validated);
 
         return redirect()->route('admin.home-sections.index')->with('success', 'تم تحديث القسم بنجاح');
     }
 
-    public function destroy(HomePageSection $homePageSection)
+    public function destroy(HomePageSection $section)
     {
-        if ($homePageSection->image) {
-            Storage::disk('public')->delete($homePageSection->image);
+        if ($section->image) {
+            Storage::disk('public')->delete($section->image);
         }
-        $homePageSection->delete();
+        $section->delete();
 
         return redirect()->route('admin.home-sections.index')->with('success', 'تم حذف القسم بنجاح');
     }
