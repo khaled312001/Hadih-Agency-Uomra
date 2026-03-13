@@ -341,6 +341,7 @@
         </div>
 
         <!-- User Info -->
+        @auth
         <div class="sidebar-user d-flex align-items-center gap-2">
             <div class="user-avatar-sm"><i class="fas fa-user"></i></div>
             <div style="overflow:hidden;">
@@ -348,6 +349,15 @@
                 <div class="uemail">{{ auth()->user()->email }}</div>
             </div>
         </div>
+        @else
+        <div class="sidebar-user d-flex align-items-center gap-2">
+            <div class="user-avatar-sm" style="background:#64748b;"><i class="fas fa-user-secret"></i></div>
+            <div style="overflow:hidden;">
+                <div class="uname">زائر</div>
+                <div class="uemail">مرحباً بك في هدية</div>
+            </div>
+        </div>
+        @endauth
 
         <!-- Navigation -->
         <nav class="sidebar-nav">
@@ -364,6 +374,7 @@
                         {{-- order count badge --}}
                     </a>
                 </li>
+                @auth
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('messages.*') ? 'active' : '' }}" href="{{ route('messages.index') }}">
                         <i class="fas fa-envelope"></i>
@@ -374,11 +385,14 @@
                         @endif
                     </a>
                 </li>
+                @endauth
+                @auth
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }}" href="{{ route('profile') }}">
                         <i class="fas fa-user-edit"></i><span>الملف الشخصي</span>
                     </a>
                 </li>
+                @endauth
             </ul>
 
             <hr class="sidebar-divider">
@@ -399,6 +413,7 @@
         </div>
 
         <!-- Footer / Logout -->
+        @auth
         <div class="sidebar-footer">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -407,6 +422,13 @@
                 </button>
             </form>
         </div>
+        @else
+        <div class="sidebar-footer">
+            <a href="{{ route('login') }}" class="btn-quick text-center justify-content-center">
+                <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+            </a>
+        </div>
+        @endauth
     </aside>
 
     <!-- ===== MAIN CONTENT ===== -->
@@ -424,15 +446,22 @@
                     <div class="dropdown">
                         <a class="profile-btn-top dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="pa-circle"><i class="fas fa-user"></i></div>
-                            <span class="d-none d-sm-block" style="font-weight:600;color:#1e293b;font-size:.875rem;">{{ auth()->user()->name }}</span>
+                            <span class="d-none d-sm-block" style="font-weight:600;color:#1e293b;font-size:.875rem;">{{ auth()->check() ? auth()->user()->name : 'زائر' }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
+                            @auth
                             <li><a class="dropdown-item" href="{{ route('profile') }}">
                                 <i class="fas fa-user-edit text-primary"></i> الملف الشخصي
                             </a></li>
+                            @else
+                            <li><a class="dropdown-item" href="{{ route('login') }}">
+                                <i class="fas fa-sign-in-alt text-primary"></i> تسجيل الدخول
+                            </a></li>
+                            @endauth
                             <li><a class="dropdown-item" href="{{ url('/') }}" target="_blank">
                                 <i class="fas fa-home text-info"></i> الموقع الرئيسي
                             </a></li>
+                            @auth
                             <li><hr class="dropdown-divider"></li>
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">
@@ -442,6 +471,7 @@
                                     </button>
                                 </form>
                             </li>
+                            @endauth
                         </ul>
                     </div>
                 </div>
