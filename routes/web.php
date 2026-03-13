@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\Auth\AdminLoginController;
+use App\Http\Controllers\Admin\HomePageSectionController;
 
 // Landing Page
 Route::get('/', [HomeController::class, 'index'])->name('welcome');
@@ -79,5 +80,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/profile', [AdminController::class, 'profile'])->name('profile');
         Route::put('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password');
+
+        // Home Page Sections
+        Route::resource('home-sections', HomePageSectionController::class);
+        Route::post('home-sections/update-order', [HomePageSectionController::class, 'updateOrder'])->name('home-sections.update-order');
     });
 });
