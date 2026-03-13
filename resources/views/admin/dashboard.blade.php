@@ -251,6 +251,8 @@
                     </div>
                 </div>
             </div>
+@endsection
+
 @section('scripts')
     <script>
         // Orders by Status Chart
