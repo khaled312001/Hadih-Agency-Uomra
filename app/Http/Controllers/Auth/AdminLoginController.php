@@ -85,8 +85,8 @@ class AdminLoginController extends Controller
     protected function attemptLogin(Request $request)
     {
         $credentials = $this->credentials($request);
+        $credentials['role'] = 'admin'; // Allow only admins
         
-        // Allow all users to login through admin login
         return $this->guard()->attempt(
             $credentials, $request->boolean('remember')
         );

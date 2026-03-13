@@ -94,7 +94,7 @@
                                     <input type="text" name="customer_name" class="hd-input @error('customer_name') hd-input--error @enderror"
                                            value="{{ old('customer_name') }}" placeholder="أدخل اسمك الكامل" required>
                                 </div>
-                                @error('customer_name')<div class="hd-error-msg">{{ $message }}</div>@error
+                                @error('customer_name')<div class="hd-error-msg">{{ $message }}</div>@enderror
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -105,7 +105,7 @@
                                     <input type="email" name="customer_email" class="hd-input @error('customer_email') hd-input--error @enderror"
                                            value="{{ old('customer_email') }}" placeholder="email@example.com" required>
                                 </div>
-                                @error('customer_email')<div class="hd-error-msg">{{ $message }}</div>@error
+                                @error('customer_email')<div class="hd-error-msg">{{ $message }}</div>@enderror
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -116,7 +116,7 @@
                                     <input type="tel" name="customer_phone" class="hd-input @error('customer_phone') hd-input--error @enderror"
                                            value="{{ old('customer_phone') }}" placeholder="رقم الجوال" required>
                                 </div>
-                                @error('customer_phone')<div class="hd-error-msg">{{ $message }}</div>@error
+                                @error('customer_phone')<div class="hd-error-msg">{{ $message }}</div>@enderror
                             </div>
                         </div>
                     </div>
