@@ -962,232 +962,177 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero-section">
-        <!-- Video Background -->
-        <video class="hero-video-background" autoplay muted loop playsinline>
-            <source src="https://www.youtube.com/watch?v=AvfQb6BI8o8" type="video/mp4">
-            <!-- Fallback for browsers that don't support video -->
-        </video>
-        
-        <!-- YouTube iframe as fallback -->
-        <iframe 
-            class="hero-video-background" 
-            src="https://www.youtube.com/embed/AvfQb6BI8o8?autoplay=1&mute=1&loop=1&playlist=AvfQb6BI8o8&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1" 
-            title="تطبيق هدية - العمرة الإلكترونية"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowfullscreen
-            style="border: none;">
-        </iframe>
-        
-        <div class="floating-elements">
-            <div class="floating-element"></div>
-            <div class="floating-element"></div>
-            <div class="floating-element"></div>
-            <div class="floating-element"></div>
-            <div class="floating-element"></div>
-        </div>
-        <div class="particle-container"></div>
-        <div class="container">
-            <div class="text-center">
-                <div class="logo animate-on-scroll page-load-animation">
-                    <img src="/images/logo.jpg" alt="هدية" style="height: 120px; width: auto;" onerror="this.style.display='none'" class="icon-pulse">
+    <!-- Dynamic Sections -->
+    @foreach($sections as $section)
+        @if($section->type === 'hero')
+            <!-- Hero Section -->
+            <section id="home" class="hero-section">
+                <!-- Video Background -->
+                @if($section->video_url)
+                    <iframe 
+                        class="hero-video-background" 
+                        src="{{ $section->video_url }}?autoplay=1&mute=1&loop=1&playlist={{ last(explode('/', $section->video_url)) }}&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&fs=0&disablekb=1" 
+                        title="{{ $section->title_ar }}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen
+                        style="border: none;">
+                    </iframe>
+                @endif
+                
+                <div class="floating-elements">
+                    <div class="floating-element"></div>
+                    <div class="floating-element"></div>
+                    <div class="floating-element"></div>
+                    <div class="floating-element"></div>
+                    <div class="floating-element"></div>
                 </div>
-                <h1 class="app-title animate-on-scroll page-load-animation-delay-1 typing-effect">هدية</h1>
-                <p class="hero-subtitle animate-on-scroll page-load-animation-delay-2">تطبيق العمرة الإلكتروني - كوسيط موثوق بين المستفيدين ومزودي الخدمة المؤهلين شرعياً</p>
-                <div class="mt-5 animate-on-scroll page-load-animation-delay-3">
-                    @guest
-                        <a href="{{ route('orders.create') }}" class="btn btn-primary-custom btn-custom me-3 hover-lift">
-                            <i class="fas fa-shopping-cart me-2 icon-animated"></i>اطلب عمرة الآن
-                        </a>
-                        <a href="/login" class="btn btn-outline-light btn-custom hover-lift">
-                            <i class="fas fa-sign-in-alt me-2 icon-animated"></i>تسجيل الدخول
-                        </a>
-                    @else
-                        @if(auth()->user()->role !== 'admin')
-                            <a href="{{ route('orders.create') }}" class="btn btn-primary-custom btn-custom me-3 hover-lift">
-                                <i class="fas fa-shopping-cart me-2 icon-animated"></i>اطلب عمرة الآن
-                            </a>
-                            <a href="{{ route('dashboard') }}" class="btn btn-outline-light btn-custom hover-lift">
-                                <i class="fas fa-tachometer-alt me-2 icon-animated"></i>لوحة التحكم
-                            </a>
-                        @else
-                            <a href="{{ route('admin.dashboard') }}" class="btn btn-warning btn-custom me-3 hover-lift">
-                                <i class="fas fa-cog me-2 icon-animated"></i>لوحة الإدارة
-                            </a>
-                        @endif
-                    @endguest
+                <div class="container">
+                    <div class="text-center">
+                        <div class="logo animate-on-scroll page-load-animation">
+                            <img src="/images/logo.jpg" alt="هدية" style="height: 120px; width: auto;" onerror="this.style.display='none'" class="icon-pulse">
+                        </div>
+                        <h1 class="app-title animate-on-scroll page-load-animation-delay-1 typing-effect">
+                            {{ app()->getLocale() == 'ar' ? $section->title_ar : $section->title_en }}
+                        </h1>
+                        <p class="hero-subtitle animate-on-scroll page-load-animation-delay-2">
+                            {{ app()->getLocale() == 'ar' ? $section->subtitle_ar : $section->subtitle_en }}
+                        </p>
+                        <div class="mt-5 animate-on-scroll page-load-animation-delay-3">
+                            @if($section->button_text_ar)
+                                <a href="{{ $section->button_link ?? route('orders.create') }}" class="btn btn-primary-custom btn-custom me-3 hover-lift">
+                                    <i class="fas fa-shopping-cart me-2 icon-animated"></i>
+                                    {{ app()->getLocale() == 'ar' ? $section->button_text_ar : $section->button_text_en }}
+                                </a>
+                            @endif
+                            @guest
+                                <a href="/login" class="btn btn-outline-light btn-custom hover-lift">
+                                    <i class="fas fa-sign-in-alt me-2 icon-animated"></i>تسجيل الدخول
+                                </a>
+                            @endguest
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
+        @elseif($section->type === 'about')
+            <!-- About Section -->
+            <section id="about" class="py-5 bg-white">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg-6 mb-5">
+                            <h2 class="section-title text-end animate-on-scroll">
+                                {{ app()->getLocale() == 'ar' ? $section->title_ar : $section->title_en }}
+                            </h2>
+                            <p class="lead text-muted mb-4 animate-on-scroll">
+                                {{ app()->getLocale() == 'ar' ? $section->subtitle_ar : $section->subtitle_en }}
+                            </p>
+                            @if($section->button_text_ar)
+                            <a href="{{ $section->button_link }}" class="btn btn-primary-custom btn-custom hover-lift">
+                                {{ app()->getLocale() == 'ar' ? $section->button_text_ar : $section->button_text_en }}
+                            </a>
+                            @endif
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="text-center animate-on-scroll">
+                                <img src="{{ $section->image ?? 'https://omra.site/assets/images/3.png' }}" 
+                                     alt="{{ $section->title_ar }}" class="img-fluid rounded-3 shadow-lg hover-scale">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-    <!-- About Section -->
-    <section id="about" class="py-5 bg-white">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-6 mb-5">
-                    <h2 class="section-title text-end animate-on-scroll">من نحن</h2>
-                    <p class="lead text-muted mb-4 animate-on-scroll">
-                        هدية هو تطبيق العمرة الإلكتروني الأول من نوعه في المملكة العربية السعودية، 
-                        يهدف إلى ربط أصحاب الرخص الشرعية مع مزودي الخدمة المؤهلين شرعياً من طلبة العلم 
-                        وحَمَلة كتاب الله من سكان مكة المكرمة.
-                    </p>
+        @elseif($section->type === 'stats')
+            <!-- Stats Section -->
+            <section class="py-5 bg-light">
+                <div class="container">
+                    <div class="row text-center mb-5">
+                        <div class="col-12">
+                            <h2 class="section-title animate-on-scroll">
+                                {{ app()->getLocale() == 'ar' ? $section->title_ar : $section->title_en }}
+                            </h2>
+                            <p class="text-muted animate-on-scroll">
+                                {{ app()->getLocale() == 'ar' ? $section->subtitle_ar : $section->subtitle_en }}
+                            </p>
+                        </div>
+                    </div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <div class="d-flex align-items-center animate-on-scroll hover-lift">
-                                <div class="feature-icon me-3 icon-animated" style="width: 60px; height: 60px; font-size: 1.5rem;">
-                                    <i class="fas fa-shield-alt"></i>
+                        <div class="col-md-3 mb-4">
+                            <div class="text-center p-4 animate-on-scroll hover-lift">
+                                <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 icon-animated" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-users fa-2x"></i>
                                 </div>
-                                <div>
-                                    <h6 class="mb-1">موثوقية عالية</h6>
-                                    <small class="text-muted">مزودو خدمة مؤهلون شرعياً</small>
-                                </div>
+                                <span class="stats-counter">{{ $stats['total_users'] }}</span>
+                                <p class="text-muted">مستخدم مسجل</p>
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <div class="d-flex align-items-center animate-on-scroll hover-lift">
-                                <div class="feature-icon me-3 icon-animated" style="width: 60px; height: 60px; font-size: 1.5rem;">
-                                    <i class="fas fa-video"></i>
+                        <div class="col-md-3 mb-4">
+                            <div class="text-center p-4 animate-on-scroll hover-lift">
+                                <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 icon-animated" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-shopping-cart fa-2x"></i>
                                 </div>
-                                <div>
-                                    <h6 class="mb-1">توثيق بالفيديو</h6>
-                                    <small class="text-muted">متابعة المناسك بالصوت والصورة</small>
+                                <span class="stats-counter">{{ $stats['total_orders'] }}</span>
+                                <p class="text-muted">طلب عمرة</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="text-center p-4 animate-on-scroll hover-lift">
+                                <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 icon-animated" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-check-circle fa-2x"></i>
                                 </div>
+                                <span class="stats-counter">{{ $stats['completed_orders'] }}</span>
+                                <p class="text-muted">عمرة مكتملة</p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-4">
+                            <div class="text-center p-4 animate-on-scroll hover-lift">
+                                <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 icon-animated" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-star fa-2x"></i>
+                                </div>
+                                <span class="stats-counter">4.9</span>
+                                <p class="text-muted">تقييم المستخدمين</p>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="text-center animate-on-scroll">
-                        <img src="https://omra.site/assets/images/3.png" 
-                             alt="الكعبة المشرفة" class="img-fluid rounded-3 shadow-lg hover-scale">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+            </section>
 
-    <!-- Stats Section -->
-    <section class="py-5 bg-light">
-        <div class="container">
-            <div class="row text-center mb-5">
-                <div class="col-12">
-                    <h2 class="section-title animate-on-scroll">إحصائيات التطبيق</h2>
-                    <p class="text-muted animate-on-scroll">أرقام تتحدث عن نجاحنا في خدمة ضيوف الرحمن</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-3 mb-4">
-                    <div class="text-center p-4 animate-on-scroll hover-lift">
-                        <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 icon-animated" style="width: 80px; height: 80px;">
-                            <i class="fas fa-users fa-2x"></i>
+        @elseif($section->type === 'features')
+            <!-- Features Section -->
+            <section id="features" class="py-5 bg-white">
+                <div class="container">
+                    <div class="row text-center mb-5">
+                        <div class="col-12">
+                            <h2 class="section-title animate-on-scroll">
+                                {{ app()->getLocale() == 'ar' ? $section->title_ar : $section->title_en }}
+                            </h2>
+                            <p class="text-muted animate-on-scroll">
+                                {{ app()->getLocale() == 'ar' ? $section->subtitle_ar : $section->subtitle_en }}
+                            </p>
                         </div>
-                        <span class="stats-counter">{{ $stats['total_users'] }}</span>
-                        <p class="text-muted">مستخدم مسجل</p>
+                    </div>
+                    <div class="row">
+                        @php 
+                            $features = app()->getLocale() == 'ar' ? ($section->content_ar ?? []) : ($section->content_en ?? []);
+                        @endphp
+                        @foreach($features as $feature)
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="feature-card animate-on-scroll">
+                                <div class="feature-icon icon-animated">
+                                    <i class="{{ $feature['icon'] ?? 'fas fa-check' }}"></i>
+                                </div>
+                                <h5 class="mb-3">{{ $feature['title'] ?? '' }}</h5>
+                                <p class="text-muted">{{ $feature['text'] ?? '' }}</p>
+                            </div>
+                        </div>
+                        @endforeach
                     </div>
                 </div>
-                <div class="col-md-3 mb-4">
-                    <div class="text-center p-4 animate-on-scroll hover-lift">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 icon-animated" style="width: 80px; height: 80px;">
-                            <i class="fas fa-shopping-cart fa-2x"></i>
-                        </div>
-                        <span class="stats-counter">{{ $stats['total_orders'] }}</span>
-                        <p class="text-muted">طلب عمرة</p>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="text-center p-4 animate-on-scroll hover-lift">
-                        <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 icon-animated" style="width: 80px; height: 80px;">
-                            <i class="fas fa-check-circle fa-2x"></i>
-                        </div>
-                        <span class="stats-counter">{{ $stats['completed_orders'] }}</span>
-                        <p class="text-muted">عمرة مكتملة</p>
-                    </div>
-                </div>
-                <div class="col-md-3 mb-4">
-                    <div class="text-center p-4 animate-on-scroll hover-lift">
-                        <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3 icon-animated" style="width: 80px; height: 80px;">
-                            <i class="fas fa-star fa-2x"></i>
-                        </div>
-                        <span class="stats-counter">4.9</span>
-                        <p class="text-muted">تقييم المستخدمين</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+            </section>
+        @endif
+    @endforeach
 
-    <!-- Features Section -->
-    <section id="features" class="py-5 bg-white">
-        <div class="container">
-            <div class="row text-center mb-5">
-                <div class="col-12">
-                    <h2 class="section-title animate-on-scroll">لماذا هدية؟</h2>
-                    <p class="text-muted animate-on-scroll">مميزات تجعلنا الخيار الأمثل لخدمة العمرة</p>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon icon-animated">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                        <h5 class="mb-3">مزودو خدمة مؤهلون</h5>
-                        <p class="text-muted">طلبة علم وحَمَلة كتاب الله من سكان مكة المكرمة، مؤهلون شرعياً لأداء العمرة بالنيابة</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon icon-animated">
-                            <i class="fas fa-video"></i>
-                        </div>
-                        <h5 class="mb-3">توثيق شامل</h5>
-                        <p class="text-muted">متابعة جميع مناسك العمرة بالفيديو والصوت، مع إرسال التسجيلات لحساب المستفيد</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon icon-animated">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h5 class="mb-3">أمان وموثوقية</h5>
-                        <p class="text-muted">نظام أمان متقدم مع ضمانات كاملة لجميع المعاملات والخدمات المقدمة</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon icon-animated">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <h5 class="mb-3">خدمة سريعة</h5>
-                        <p class="text-muted">معالجة الطلبات في أسرع وقت ممكن مع متابعة مستمرة لحالة الطلب</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon icon-animated">
-                            <i class="fas fa-headset"></i>
-                        </div>
-                        <h5 class="mb-3">دعم فني 24/7</h5>
-                        <p class="text-muted">فريق دعم فني متاح على مدار الساعة لمساعدتك في أي استفسار أو مشكلة</p>
-                    </div>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="feature-card animate-on-scroll">
-                        <div class="feature-icon icon-animated">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <h5 class="mb-3">تطبيق متجاوب</h5>
-                        <p class="text-muted">واجهة سهلة الاستخدام تعمل بسلاسة على جميع الأجهزة والأنظمة</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Umrah Packages Section -->
+    <!-- Umrah Packages Section (Keep static as it has its own logic) -->
     <section id="packages" class="py-5 bg-gradient-primary">
         <div class="container">
             <div class="row text-center mb-5">

@@ -785,6 +785,12 @@
                     </a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.home-sections.*') ? 'active' : '' }}" href="{{ route('admin.home-sections.index') }}">
+                        <i class="fas fa-home"></i>
+                        <span>إدارة الصفحة الرئيسية</span>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
                         <i class="fas fa-cog"></i>
                         <span>الإعدادات</span>

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\UmrahPackage;
 use App\Models\Order;
 use App\Models\User;
+use App\Models\HomePageSection;
 
 class HomeController extends Controller
 {
@@ -19,14 +20,16 @@ class HomeController extends Controller
     public function index()
     {
         $packages = UmrahPackage::active()->ordered()->get();
+        $sections = HomePageSection::where('is_active', true)->orderBy('order')->get();
+        
         $stats = [
-            'total_orders' => Order::count() > 0 ? Order::count() : 1247,
-            'total_users' => User::count() > 0 ? User::count() : 892,
-            'completed_orders' => Order::where('status', 'completed')->count() > 0 ? Order::where('status', 'completed')->count() : 1156,
+            'total_orders' => Order::count(),
+            'total_users' => User::count(),
+            'completed_orders' => Order::where('status', 'completed')->count(),
         ];
         
         
-        return view('welcome', compact('packages', 'stats'));
+        return view('welcome', compact('packages', 'stats', 'sections'));
     }
 
     /**
