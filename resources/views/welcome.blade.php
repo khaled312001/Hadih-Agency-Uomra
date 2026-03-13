@@ -910,8 +910,10 @@
                 <div class="d-flex">
                     @guest
                         <!-- Guest User Navigation -->
-                        <a href="/login" class="btn btn-outline-primary me-2">تسجيل الدخول</a>
-                        <a href="/register" class="btn btn-primary">إنشاء حساب</a>
+                        <a href="{{ route('orders.create') }}" class="btn btn-primary me-2">
+                            <i class="fas fa-plus me-1"></i>طلب عمرة
+                        </a>
+                        <a href="/login" class="btn btn-outline-primary">تسجيل الدخول</a>
                     @else
                         @if(auth()->user()->role !== 'admin')
                             <!-- Regular User Navigation -->
@@ -995,8 +997,11 @@
                 <p class="hero-subtitle animate-on-scroll page-load-animation-delay-2">تطبيق العمرة الإلكتروني - كوسيط موثوق بين المستفيدين ومزودي الخدمة المؤهلين شرعياً</p>
                 <div class="mt-5 animate-on-scroll page-load-animation-delay-3">
                     @guest
-                        <a href="/register" class="btn btn-primary-custom btn-custom me-3 hover-lift">
-                            <i class="fas fa-user-plus me-2 icon-animated"></i>ابدأ الآن
+                        <a href="{{ route('orders.create') }}" class="btn btn-primary-custom btn-custom me-3 hover-lift">
+                            <i class="fas fa-shopping-cart me-2 icon-animated"></i>اطلب عمرة الآن
+                        </a>
+                        <a href="/login" class="btn btn-outline-light btn-custom hover-lift">
+                            <i class="fas fa-sign-in-alt me-2 icon-animated"></i>تسجيل الدخول
                         </a>
                     @else
                         @if(auth()->user()->role !== 'admin')
@@ -1253,17 +1258,10 @@
                                     </div>
                                     
                                     <div class="package-actions">
-                                        @auth
-                                            <a href="{{ route('orders.create') }}?package={{ $package->id }}" class="btn-package-primary">
-                                                <i class="fas fa-shopping-cart"></i>
-                                                <span>اطلب الآن</span>
-                                            </a>
-                                        @else
-                                            <a href="{{ route('login') }}" class="btn-package-primary">
-                                                <i class="fas fa-sign-in-alt"></i>
-                                                <span>سجل الدخول للطلب</span>
-                                            </a>
-                                        @endauth
+                                        <a href="{{ route('orders.create') }}?package={{ $package->id }}" class="btn-package-primary">
+                                            <i class="fas fa-shopping-cart"></i>
+                                            <span>اطلب الآن</span>
+                                        </a>
                                         
                                     
                                     </div>
@@ -1453,7 +1451,7 @@
                     <p class="text-white-50 small">أول جمعية سعودية متخصصة في خدمة ضيوف الرحمن وتقديم الخدمات المتنوعة لهم</p>
                     <div class="mt-3">
                         @guest
-                            <a href="/register" class="btn btn-outline-light btn-sm me-2">إنشاء حساب</a>
+                            <a href="{{ route('orders.create') }}" class="btn btn-outline-light btn-sm me-2">طلب عمرة الآن</a>
                             <a href="/login" class="btn btn-light btn-sm">تسجيل الدخول</a>
                         @else
                             @if(auth()->user()->role !== 'admin')

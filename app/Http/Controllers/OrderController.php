@@ -166,7 +166,7 @@ class OrderController extends Controller
                         'gateway_response' => $statusData
                     ]);
 
-                    return redirect()->route((auth()->check() ? 'dashboard' : 'welcome'))
+                    return redirect()->route('orders.show', $order)
                         ->with('success', 'تم دفع الطلب بنجاح وهو الآن قيد التأكيد');
                 }
             }

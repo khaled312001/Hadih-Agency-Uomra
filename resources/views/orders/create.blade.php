@@ -38,7 +38,7 @@
                                             data-currency="{{ $package->currency }}"
                                             data-duration="{{ $package->duration }}"
                                             data-desc="{{ $package->description_ar }}"
-                                            {{ old('umrah_package_id') == $package->id ? 'selected' : '' }}>
+                                            {{ (old('umrah_package_id') == $package->id || request('package') == $package->id) ? 'selected' : '' }}>
                                         {{ $package->name_ar }} — {{ number_format($package->price) }} {{ $package->currency }}
                                     </option>
                                 @endforeach
