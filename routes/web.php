@@ -71,6 +71,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
         Route::resource('packages', UmrahPackageController::class);
         Route::resource('orders', OrderController::class);
+        Route::post('orders/{order}/videos', [OrderVideoController::class, 'store'])->name('orders.videos.store');
+        Route::delete('videos/{video}', [OrderVideoController::class, 'destroy'])->name('videos.destroy');
         Route::resource('users', UserController::class);
         Route::resource('messages', MessageController::class);
         Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');

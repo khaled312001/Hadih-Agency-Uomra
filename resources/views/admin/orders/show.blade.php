@@ -111,6 +111,87 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Proof Videos -->
+            <div class="content-card mt-4">
+                <div class="p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">
+                            <i class="fas fa-video me-2 text-primary"></i>فيديوهات الإثبات
+                        </h5>
+                        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#uploadVideoForm">
+                            <i class="fas fa-plus me-1"></i>رفع فيديو جديد
+                        </button>
+                    </div>
+
+                    <!-- Upload Form (Collapsed) -->
+                    <div class="collapse mb-4" id="uploadVideoForm">
+                        <div class="card card-body bg-light border-0 shadow-sm">
+                            <form action="{{ route('admin.orders.videos.store', $order) }}" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold">اختر الفيديو (MP4, MOV)</label>
+                                        <input type="file" name="video" class="form-control form-control-sm" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label small fw-bold">عنوان الفيديو</label>
+                                        <input type="text" name="title" class="form-control form-control-sm" value="فيديو إثبات أداء العمرة" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label small fw-bold">وصف إضافي (اختياري)</label>
+                                        <textarea name="description" class="form-control form-control-sm" rows="2"></textarea>
+                                    </div>
+                                    <div class="col-12 text-end">
+                                        <button type="submit" class="btn btn-success btn-sm">
+                                            <i class="fas fa-upload me-1"></i>رفع وإرسال إشعار
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Current Videos -->
+                    @if($order->videos->count() > 0)
+                        <div class="row row-cols-1 row-cols-md-2 g-3">
+                            @foreach($order->videos as $video)
+                                <div class="col">
+                                    <div class="card h-100 border-0 shadow-sm">
+                                        <video class="card-img-top" style="max-height: 150px; background: #000;" controls>
+                                            <source src="{{ asset('storage/' . $video->video_path) }}" type="video/mp4">
+                                        </video>
+                                        <div class="card-body p-3">
+                                            <h6 class="card-title small fw-bold mb-1">{{ $video->title }}</h6>
+                                            <p class="card-text small text-muted mb-2">{{ $video->created_at->format('Y-m-d H:i') }}</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <form action="{{ route('admin.videos.destroy', $video) }}" method="POST" onsubmit="return confirm('حذف هذا الفيديو؟')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-link text-danger p-0"><i class="fas fa-trash"></i></button>
+                                                </form>
+                                                
+                                                @php
+                                                    $wa_msg = "السلام عليكم {$order->customer_name}\n\nتم رفع فيديو إثبات أداء العمرة لطلبكم رقم {$order->order_number}.\nيمكنكم مشاهدته هنا: " . route('orders.show', $order);
+                                                    $wa_link = \App\Services\WhatsAppService::generateLink($order->whatsapp_country_code . $order->whatsapp_phone, $wa_msg);
+                                                @endphp
+                                                <a href="{{ $wa_link }}" target="_blank" class="btn btn-success btn-sm px-2 py-1">
+                                                    <i class="fab fa-whatsapp me-1"></i>إرسال واتساب
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-4 bg-light rounded-3">
+                            <i class="fas fa-video-slash fa-2x text-muted mb-2"></i>
+                            <p class="text-muted mb-0 small">لا يوجد فيديوهات مرفوعة لهذا الطلب بعد.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
 
         <!-- Actions & Additional Info -->

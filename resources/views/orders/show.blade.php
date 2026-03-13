@@ -48,6 +48,44 @@
     {{-- ===== MAIN COLUMN ===== --}}
     <div class="col-12 col-lg-8">
 
+        {{-- Proof Videos (فيديو الإثبات) --}}
+        @if($order->videos->count() > 0)
+        <div class="hd-card mb-3 border-primary shadow-sm" style="border: 2px solid var(--hd-primary) !important;">
+            <div class="hd-card-header" style="background: rgba(99, 102, 241, 0.05);">
+                <div class="hd-card-header__left">
+                    <div class="hd-card-header__icon" style="background:var(--hd-grad-success);">
+                        <i class="fas fa-video"></i>
+                    </div>
+                    <div>
+                        <div class="hd-card-header__title">فيديو الإثبات (فيديو العمرة)</div>
+                        <div class="hd-card-header__sub">تم توثيق أداء المناسك كما طُلِب</div>
+                    </div>
+                </div>
+            </div>
+            <div class="hd-card-body p-0">
+                @foreach($order->videos as $video)
+                <div class="p-3 border-bottom last-child-no-border">
+                    <div class="ratio ratio-16x9 mb-3 overflow-hidden" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                        <video controls preload="metadata" style="background: #000;">
+                            <source src="{{ asset('storage/' . $video->video_path) }}" type="video/mp4">
+                            متصفحك لا يدعم تشغيل الفيديو.
+                        </video>
+                    </div>
+                    <div class="px-2">
+                        <h6 class="fw-bold mb-1">{{ $video->title }}</h6>
+                        @if($video->description)
+                            <p class="text-muted small mb-0">{{ $video->description }}</p>
+                        @endif
+                        <div class="mt-2 small text-muted">
+                            <i class="far fa-calendar-alt me-1"></i> تم الرفع في {{ $video->created_at->format('Y/m/d — H:i') }}
+                        </div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         {{-- Order Timeline --}}
         <div class="hd-card mb-3">
             <div class="hd-card-header">
