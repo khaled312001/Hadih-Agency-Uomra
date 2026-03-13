@@ -94,17 +94,17 @@
                         <td>
                             <div class="hd-user-cell">
                                 <div class="hd-avatar hd-avatar--sm"
-                                     style="background:{{ $message->sender->role==='admin' ? 'linear-gradient(135deg,#f59e0b,#f97316)' : 'var(--hd-grad-primary)' }};">
-                                    {{ mb_substr($message->sender->name, 0, 1) }}
+                                     style="background:{{ ($message->sender && $message->sender->role === 'admin') ? 'linear-gradient(135deg,#f59e0b,#f97316)' : 'var(--hd-grad-primary)' }};">
+                                    {{ mb_substr($message->sender ? $message->sender->name : 'م', 0, 1) }}
                                 </div>
                                 <div>
                                     <div style="font-weight:700;font-size:.82rem;">
-                                        {{ $message->sender->name }}
-                                        @if($message->sender->role === 'admin')
+                                        {{ $message->sender ? $message->sender->name : 'مستخدم محذوف' }}
+                                        @if($message->sender && $message->sender->role === 'admin')
                                             <i class="fas fa-crown" style="color:#f59e0b;font-size:.7rem;margin-right:.2rem;"></i>
                                         @endif
                                     </div>
-                                    <div style="font-size:.72rem;color:#94a3b8;">إلى: {{ $message->receiver->name }}</div>
+                                    <div style="font-size:.72rem;color:#94a3b8;">إلى: {{ $message->receiver ? $message->receiver->name : 'مستخدم محذوف' }}</div>
                                 </div>
                             </div>
                         </td>

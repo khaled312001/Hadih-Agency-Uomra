@@ -170,7 +170,7 @@
                     <!-- Sender -->
                     <div class="d-flex align-items-center mb-3">
                         <div class="avatar-sm me-3">
-                            @if($message->sender->role === 'admin')
+                            @if($message->sender && $message->sender->role === 'admin')
                                 <div class="avatar-title bg-warning text-white rounded-circle">
                                     <i class="fas fa-crown"></i>
                                 </div>
@@ -181,9 +181,9 @@
                             @endif
                         </div>
                         <div>
-                            <h6 class="mb-0 {{ $message->sender->role === 'admin' ? 'text-warning' : 'text-primary' }}">
-                                {{ $message->sender->name }}
-                                @if($message->sender->role === 'admin')
+                            <h6 class="mb-0 {{ ($message->sender && $message->sender->role === 'admin') ? 'text-warning' : 'text-primary' }}">
+                                {{ $message->sender ? $message->sender->name : 'مستخدم محذوف' }}
+                                @if($message->sender && $message->sender->role === 'admin')
                                     <i class="fas fa-crown ms-1" title="إدارة"></i>
                                 @endif
                             </h6>
@@ -194,7 +194,7 @@
                     <!-- Receiver -->
                     <div class="d-flex align-items-center">
                         <div class="avatar-sm me-3">
-                            @if($message->receiver->role === 'admin')
+                            @if($message->receiver && $message->receiver->role === 'admin')
                                 <div class="avatar-title bg-warning text-white rounded-circle">
                                     <i class="fas fa-crown"></i>
                                 </div>
@@ -205,9 +205,9 @@
                             @endif
                         </div>
                         <div>
-                            <h6 class="mb-0 {{ $message->receiver->role === 'admin' ? 'text-warning' : 'text-primary' }}">
-                                {{ $message->receiver->name }}
-                                @if($message->receiver->role === 'admin')
+                            <h6 class="mb-0 {{ ($message->receiver && $message->receiver->role === 'admin') ? 'text-warning' : 'text-primary' }}">
+                                {{ $message->receiver ? $message->receiver->name : 'مستخدم محذوف' }}
+                                @if($message->receiver && $message->receiver->role === 'admin')
                                     <i class="fas fa-crown ms-1" title="إدارة"></i>
                                 @endif
                             </h6>
